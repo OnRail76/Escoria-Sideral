@@ -1,0 +1,5 @@
+ESCORIA SIDERAL - final V2 sin logotipo.
+SCR nativo 256x192, 6144 bytes bitmap + 768 atributos.
+Dos colores por celda 8x8, FLASH desactivado.
+Rutina de copia a VRAM; ubicar codigo y datos fuera de VRAM.
+Pendiente de prueba en emulador.

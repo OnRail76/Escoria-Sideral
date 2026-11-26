@@ -1,0 +1,10 @@
+ESCORIA SIDERAL | El universo también tiene basura...
+ZX Spectrum 48K | Tony C. Ware | 2026
+
+RECURSOS: soldado, alien, zombi, suelos V2, HUD y fuente.
+JEFES: Señor, Bruja, Mago, Cocinero y Enfermera Alien.
+EFECTOS_COMUNES: fuego horizontal, caída, rayos y explosión. Utilizar una sola copia de estos efectos en RAM; los paquetes individuales conservan copias para integración independiente.
+Cocinero actualizado: fuego vertical en vez de plumas, binarios y offsets regenerados.
+Ataques: 1 fuego; 2 ráfagas de fuego; 3 fuego y rayos; 4 fuego y caída; 5 los tres.
+DOCUMENTACION: atlas definitivo con historia y texto original.
+Recursos gráficos y demostraciones estáticas; no es un juego ejecutable. Pendientes integración, prueba de colisiones, memoria y rendimiento en emulador.

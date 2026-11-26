@@ -1,0 +1,2 @@
+ESCORIA SIDERAL - Luna calavera
+48x48 px, 1 bit, 288 bytes. Bitmap lineal: 6 bytes por fila, bit 7 a la izquierda. Tiles: 36 caracteres de 8 bytes, orden fila de caracteres. Atributos: 36 bytes, blanco normal sobre negro. Demo SCR: x=184, y=16. Fondo fijo, sin animacion ni colision. Dibujar fuera del scroll o restaurar tras el scroll si se borra. PNG RGBA con exterior transparente. No probado en emulador.

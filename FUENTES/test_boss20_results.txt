@@ -1,0 +1,9 @@
+TAP structure, resident+bank, 48K memory PASS
+Phase 1: speed 5, HP 16, destruction 75 ticks, 21 distinct images, 75 audible updates, 2120 FE writes, peak body 104868 T PASS
+Phase 2: speed 6, HP 22, destruction 75 ticks, 21 distinct images, 75 audible updates, 2135 FE writes, peak body 104868 T PASS
+Phase 3: speed 7, HP 28, destruction 75 ticks, 21 distinct images, 75 audible updates, 2131 FE writes, peak body 104868 T PASS
+Phase 4: speed 8, HP 34, destruction 75 ticks, 21 distinct images, 75 audible updates, 2131 FE writes, peak body 104868 T PASS
+New soil: all 96 scroll offsets bit-exact PASS
+Nurse faster fire, shorter rests, 3–4 shot bursts, high/low evasion PASS
+Phase 5: speed 9, HP 50, destruction 100 ticks, 26 distinct images, 100 audible updates, 2465 FE writes, peak body 111060 T PASS
+Final exact SCR after Nurse destruction PASS

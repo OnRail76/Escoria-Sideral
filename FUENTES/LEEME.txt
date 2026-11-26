@@ -1,0 +1,228 @@
+CORRECCIÓN 0.21.1 — KEMPSTON
+Ejecutable: ESCORIA_SIDERAL_ALFA_21_1.tap. Puerto $001F, bits 0–4.
+Teclado y mando disponibles en paralelo; no se exige FIRE previo para mover a Ace.
+Se descartan lecturas con direcciones opuestas simultáneas (incluido $FF).
+La espera de la pantalla de carga usa el mismo criterio. Si Fuse no entrega señales
+Kempston, seleccionar la interfaz y asignar el mando a Kempston en el emulador.
+Pruebas actuales: test_kempston.py y test_loading.py; ver sus logs.
+Cinco bancos de fase y pantallas SCR idénticos a 0.21; mismo tamaño de núcleo y RAM.
+No se ha probado un mando físico ni Fuse. Los demás logs son históricos.
+
+--- Referencia histórica de 0.21 y versiones anteriores ---
+ESCORIA SIDERAL — ALFA 0.21.1 — Tony C. Ware — ZX Spectrum 48K
+Perfil lateral experimental basado en las técnicas de GRIT ENGINE ZX V1.0.
+
+NOVEDAD 0.21 — ARRANQUE CON PANTALLA DE CARGA
+El TAP jugable es ESCORIA_SIDERAL_ALFA_21.tap. Arrancar desde el principio con LOAD "".
+Se carga un programa temporal de 76 bytes en $8000 y el SCR original de 6912 bytes en $4000.
+Al terminar el SCR suena un beep; soltar cualquier FIRE mantenido y pulsar/soltar SPACE o Kempston FIRE.
+Continúan las cargas del núcleo y ROADBANK, sobrescribiendo el programa temporal. Aparece el título normal.
+No ocupa RAM adicional durante la partida. Los 22 bloques de código/datos del juego son idénticos a 0.20.
+El archivo base_sin_carga.tap es SOLO una referencia interna para las regresiones existentes, no la entrega jugable.
+Compilación: python3 build.py. Prueba nueva: python3 test_loading.py (Pillow).
+Ver test_loading_results.txt: estructura completa TAP, gate ejecutado por el simulador Z80, pantalla exacta,
+SPACE/Kempston y transición de las cinco fases al SCR final. La ROM BASIC y la ULA real no se emulan.
+Las pruebas históricas de 0.20 se conservan como referencia; no se afirma que se hayan repetido todas en 0.21.
+
+
+FASES DISPONIBLES
+01 Carretera (cian): conserva el juego aprobado en 0.10.1.
+02 Barcelona (amarillo): skyline original fijo 256x48, suelo Ciudad tramado de 192x24,
+   zombis y meteoritos, Bruja Alien con ojo vulnerable (22 impactos) y
+   grupos de 2-3 disparos alternos altos/bajos, uno simultáneo, con pausa.
+   No hay aliens normales en las fases 1 y 2.
+03 Laboratorio (verde): fondo estático y suelo original, zombis y aliens terrestres,
+   meteoritos o relámpagos, Mago Alien con ojo vulnerable (28 impactos).
+
+CONTROLES
+QAOP + SPACE; Kempston autodetectable sin FIRE. Ace siempre hacia derecha.
+Tras vencer al Señor o la Bruja, esperar 3 s y pulsar FIRE. Mantener la cinta/TAP
+ en su posición y continuar su reproducción si el emulador la ha pausado.
+ Se cargan sucesivamente Barcelona y el Laboratorio, conservando puntuación,
+ vidas, próxima vida extra y truco. Fase 3 finaliza esta alfa.
+ Tras regresar al título desde fase 2 o 3, rebobinar la cinta al principio o al
+ encabezado ROADBANK y pulsar FIRE. En fase 1 no es necesario rebobinar.
+
+MULTICARGA
+Bloques estándar: BASIC autoload, ESCORIA017 (núcleo), ROADBANK (fase 1),
+BCNBANK (fase 2), PANTALLA2 (screen), LABBANK (fase 3), TERCERA (screen), FINAL (screen reservado). Cada uno con cabecera de 19 bytes
+incluyendo bandera y checksum, y bloque de datos. ROM LD_BYTES $0556.
+El BASIC carga el núcleo y ROADBANK antes del título. El núcleo no se
+sobrescribe durante las multicargas. Fases comparten direcciones del banco.
+El fondo de Barcelona se restaura selectivamente al borrar meteoritos.
+Los dos últimos cuadros de explosión del jefe se dibujan desde efectos
+comunes en vez de duplicar imágenes completas, con aspecto equivalente.
+
+PRUEBAS
+python3 build.py
+python3 test_cpu.py (Pillow)
+Consultar test_results_full.txt. Pruebas de instrucciones Z80, pantalla,
+regresiones de fase 1, transferencia simulada de bloques, conservación de
+estado, 186 cruces del meteorito, scroll, ataques y derrota de Bruja.
+No es un emulador Spectrum completo: ROM de carga simulada y sin contención
+ULA. Confirmar arranque y transición en emulador real antes de consolidar.
+
+NOVEDADES 0.12
+Jefes tramados definitivos: Señor y Bruja, estados opacos de ojo y boca según metadatos del nuevo banco. Efectos comunes actualizados. Ojo a suelo-17, tolerancia vertical reducida a 5 px. Mago, Cocinero y Enfermera quedan precompuestos en bosses_futuras/ para fases 3-5, no jugables aún.
+Truco: en el título A, soltar, A, soltar, SPACE; o ABAJO, soltar, ABAJO, soltar, FIRE en Kempston. Sonará un beep y aparecerá TRUCO ACTIVO en verde. Pulsar fuego de nuevo para jugar. Ace no pierde vidas por daños, conserva puntuación y truco en multicarga; el título desactiva el truco al volver.
+Regresiones Z80 y TAP superadas; ROM de carga simulada, sin ULA ni audio real. Confirmar carga, sonido y jugabilidad en emulador completo.
+
+NOVEDADES 0.13
+Señor: 16 impactos válidos (antes 6). Bruja: 22 (antes 8).
+Primer ataque tras 12 actualizaciones; no reciben daño hasta lanzar el
+primer proyectil. Se limpian los disparos pendientes al entrar en combate.
+Un impacto cada 12 actualizaciones como máximo, ojo cerrado invulnerable,
+animación de impacto breve. Se conservan los patrones altos/bajos, ráfagas,
+velocidades y 10 puntos por impacto válido.
+Prueba FIRE continuo con truco: Señor 264 actualizaciones y 7 ataques;
+Bruja 359 actualizaciones y 10 ataques. A 25 Hz nominales: 10,56 y 14,36 s
+respectivamente, sin incluir muerte. Resultados de simulación Z80, no ULA.
+
+NOVEDADES 0.14
+Suelos tramados originales de 192x24 para carretera y Barcelona. Se conserva
+el área jugable de 256 px: patrón periódico de 192 px más 64 px de repetición.
+Cuatro fases de desplazamiento sub-byte precalculadas, 96 posiciones pares,
+scroll de 2 px solo al caminar. Se ha sustituido el Stack Blaster del suelo
+repetido de 64 px por una rutina LDI desenrollada de ancho completo.
+El fondo, HUD, control y combate no cambian. Los tres suelos restantes
+se conservan en el ZIP SUELOS_TRAMADOS.zip para futuras fases.
+Pruebas: 96 posiciones de scroll de cada fase y regresiones completas.
+Muestra de máxima carga nominal: 122563 T-states de 139776 por 2 frames;
+no incluye contención ULA ni interrupciones ROM. Validar fluidez en emulador.
+
+NOVEDADES 0.15
+Final V2 exacto, SCR nativo de 6912 bytes en bloque FINAL de cinta,
+fuera de la RAM residente. La rama de victoria de fase 5 carga FINAL
+por ROM a $4000, mantiene la pantalla al menos 150 interrupciones y
+espera un FIRE nuevo antes de volver al título. Las fases 3-5 aún no
+son jugables; la fase 2 termina la alfa como antes. En la campaña
+completa, insertar las futuras cargas de fase antes del bloque FINAL.
+Regresión completa y prueba de la rama de victoria simulando fase 5
+y la transferencia de ROM superadas, SCR idéntico byte a byte.
+Código y datos residentes adicionales: 36 bytes; sin cambio del coste
+nominal del bucle de juego. No se ha probado cinta real ni ULA.
+
+NOVEDADES 0.16
+Corrección experimental del efecto moonwalk: tabla de marcha 6,5,4,3,2,1
+en vez de 1,2,3,4,5,6, con tres actualizaciones por pose. La marcha
+disparando conserva la misma fase (+6). No se invierten las imágenes,
+ni se modifica la velocidad, el scroll, la orientación o el combate.
+FONDOS_COMPLETOS.zip incluido como recurso para las fases futuras,
+no integrado en el ejecutable. La campaña sigue teniendo dos fases jugables.
+
+NOVEDADES 0.17 — LABORATORIO / MAGO
+Tres fases jugables: carretera, Barcelona, Laboratorio. LABBANK + TERCERA
+se cargan tras vencer a la Bruja, conservando vidas, puntos, bonus y truco.
+El banco FINAL sigue reservado para la futura fase 5. La fase 3 termina
+la alfa y retorna al título; para jugar de nuevo, rebobinar el TAP.
+Fondo y suelo originales de laboratorio, verde, HUD independiente.
+Director: 5/16 probabilidad de alien (aprox. 31%), zombis 1-3 impactos,
+aliens 2-4, desplazamiento normal de 2 px cada 2 actualizaciones frente
+a cada 2-3 del zombi; corredores frontales 5 vs 4 px por actualización.
+Máximo 4 activos/muriendo y 1 trasero de cualquier especie, nunca corredor.
+Relámpagos a partir de fase 3: aviso 14 actualizaciones, impacto 4,
+columna fija de 8 px de ancho y 80 de alto, un único peligro ambiental.
+Mago: 28 impactos de ojo, disparos altos/bajos y relámpagos alternados.
+Nuevo renderer por tramos de bytes opacos, tabla de salto alineada a página,
+conserva las máscaras y 77 fotogramas de Ace (29), zombi (24), alien (24),
+124 combinaciones de fotograma/alineación verificadas en el simulador.
+Prueba nominal: fase 1 112763 T-states; fase 3 115495 T-states, presupuesto
+139776 por 2 frames, sin ULA/ROM. Fin de código y datos $F7B9, pila $FFFE.
+Muestra 512: 358 zombis, 154 aliens. Mago FIRE continuo con truco: 453
+actualizaciones, 9 ataques horizontales, 3 relámpagos.
+Multicarga real, audio y fluidez perceptual pendientes de emulador.
+
+NOVEDADES 0.18 — CAMPAÑA COMPLETA / SELECTOR OCULTO
+Cinco fases jugables mediante un único TAP multicarga. Conserva las fases
+1-3, añade Ultratecnología (magenta) y Entorno alien (rojo) con los fondos,
+suelos y jefes originales. El director mantiene los límites aprobados.
+Probabilidad alien: 0/16, 0/16, 5/16, 10/16, 13/16 según fase.
+Cocinero: 34 impactos válidos, ataques horizontales y fuego descendente.
+Enfermera: 42 impactos, ataques horizontales, rayos y fuego descendente.
+No se superponen los ataques ambientales con proyectiles de los jefes.
+La victoria de la fase 5 carga el SCR FINAL exacto y vuelve al título
+tras tres segundos y una nueva pulsación de FIRE.
+TRUCO: A, soltar, A, soltar, SPACE (o abajo/abajo/FIRE Kempston).
+Beep, TRUCO ACTIVO y selector O/P FASE 1; O/P o izquierda/derecha del
+joystick eligen fase 1-5 de forma cíclica. FIRE inicia desde la elegida
+con 3 vidas, 0 puntos y truco activo. Las cargas buscan sus cabeceras
+secuencialmente; dejar correr la cinta hasta la fase seleccionada.
+Si se vuelve al título desde fase 2-5, rebobinar al aparecer REBOBINA TAP.
+Sin truco, FIRE comienza normalmente en fase 1.
+24 bloques TAP con cabeceras ROM de 19 bytes y sumas XOR verificadas.
+Residente 35077 bytes, overlay 4680 bytes, fin $FA4D, pila $FFFE.
+TAP 93378 bytes; no requiere 128K. Pruebas en simulador de instrucciones,
+transferencia ROM simulada y sin contención ULA; validar en emulador.
+
+ALFA 0.18.1 — CORRECCION DE PARPADEO (HOUSTON)
+El vídeo de Fuse muestra la desaparición intermitente simultánea de personajes
+mientras el suelo, decorado y HUD permanecen visibles. La 0.18 borraba todos
+los actores directamente en VRAM antes de componer el fotograma siguiente.
+La 0.18.1 compone la zona dinámica y la parte afectada del cielo (y=40..143)
+en un búfer lineal de 3328 bytes. Conserva la imagen anterior en VRAM hasta
+terminar el dibujado. Publica únicamente los intervalos de columnas afectados
+por los fotogramas anterior y nuevo, por bandas de ocho líneas. Limpieza de
+bandas, camino rápido solo sin solapamiento, diccionario de filas repetidas
+sin pérdida, parches de ojos/bocas y HUD actualizado únicamente si cambia.
+No se modifican reglas del director, hitboxes, controles, animaciones,
+velocidades, jefes, selector, truco ni la multicarga. Los cambios en el coste
+CPU pueden alterar la cadencia real bajo carga; comprobar en Fuse.
+Memoria: CODE residente 33422 bytes, overlay 3617 bytes, fin $EFAF.
+Búfer temporal $F000-$FCFF; reserva de pila desde $FD00, SP=$FFFE.
+TAP 86408 bytes, 24 bloques con cabeceras y XOR comprobados.
+Pruebas: python3 build.py; python3 test_cpu.py; python3 test_render.py.
+Regresiones de campaña completas y prueba nueva de 300 actualizaciones:
+VRAM dinámica intacta durante composición, publicación idéntica al búfer,
+solapamiento de máscaras y 20 estados de jefes contrastados con PNG originales.
+Muestras nominales: 125699 T-states fase 1, 130315 fase 3 (inyección de
+carga); pico de 127509 en 300 actualizaciones de prueba, sin ULA/ROM reales.
+No se ha ejecutado Fuse en este entorno: la prueba de raster, contención y
+fluidez visual en el emulador del usuario sigue siendo necesaria.
+
+ALFA 0.19 — AUDIO BEEPER
+Adaptación del enfoque audio_wait de Neptuno Ataca ZX: efectos por prioridad
+y síntesis en los intervalos de espera del sincronizador IM1/FRAMES, sin
+interrumpir el compositor ni manipular la pila del blitter. Nueve efectos:
+disparo, impacto, muerte enemigo, disparo jefe, meteorito, relámpago, vida
+extra, muerte Ace, derrota jefe. Melodía original de título una sola vez;
+jingles de Game Over y victoria dentro de la espera existente de 3 segundos.
+No hay música durante el combate. Diccionario ampliado de filas sin pérdida.
+El buffer gráfico permanece en $F000-$FCFF; reserva de pila intacta.
+Pruebas: python3 build.py; python3 test_audio.py; python3 test_render.py;
+python3 test_cpu.py. Audio y 300 actualizaciones gráficas verificados.
+La suite general se ejecutó hasta las pruebas iniciales de la fase 4;
+resto no finalizado por límite de ejecución. Pendiente escucha en Fuse
+y validación de contención real ULA. Los logs reflejan ese alcance.
+
+ALFA 0.20 — JEFES Y SUELO ALIEN V3
+Sustituido exclusivamente el suelo de la fase 5 por el bitmap original
+SUELO_ALIEN_V3.zip, 192x24, 576 bytes; se conservan el color rojo y los
+otros cuatro suelos. 96 posiciones de scroll comprobadas bit a bit.
+Velocidad de bolas de fuego por fase: 5, 6, 7, 8, 9 px/actualización
+(antes 4 en todas); 25 Hz nominales. Señor 16, Bruja 22, Mago 28, Cocinero
+34, Enfermera 50 impactos. Enfermera: ráfagas de 3–4, pausa interna 3 y
+entre ráfagas 20 actualizaciones, tras rayo 14; un solo peligro simultáneo.
+Destrucción: 75 actualizaciones (3 s nominales) en fases 1–4, 100 (4 s)
+en fase 5. Estallidos radiales animados, chispas, destellos del cuerpo,
+cuatro focos (seis en fase 5), cuatro adicionales en el crescendo final,
+y beeper de ruido con modulación y prioridad máxima. Los otros efectos
+sonoros conservan sus bancos y lógica en combate normal. El SCR final
+original sigue intacto. Mensajes de carga y victoria comparten gráficos
+con dígito de fase dinámico para liberar RAM.
+CODE residente 33452 bytes, overlay 3617; fin exclusivo $EFCD.
+Búfer $F000–$FCFF; pila reservada desde $FD00. TAP 86438 bytes.
+Pruebas nuevas: python3 test_boss20.py; python3 test_nurse20.py.
+Audio y render (300 actualizaciones en las 5 fases): PASS. Suite general
+parcial hasta 124 alineaciones; límite temporal, consultar logs. Combate
+completo Enfermera con truco y FIRE continuo: 808 actualizaciones, 23
+bolas horizontales, 3 rayos y 4 meteoros; final exacto tras 100 updates.
+Simulación Z80 con ROM de cinta simulada; no ULA, escucha ni Fuse real.
+
+
+ALFA 0.21.2 — ajuste de audio
+- Rebanada de beeper acotada antes de sincronizar cada actualización con efecto activo. Garantiza señal incluso si se agotaron las dos interrupciones nominales de espera.
+- Prioridad estricta: efectos de igual o menor prioridad no reinician el actual, excepto la destrucción del jefe, que se refresca intencionadamente.
+- Meteoritos, rayos y muertes prevalecen sobre disparos e impactos ordinarios.
+- Sin cambios intencionados en jugabilidad, gráficos, controles ni melodías. Pantallas SCR idénticas a 0.21.1; buffer F000-FCFF.
+- Pruebas 0.21.2: test_audio212.py, test_audio.py, test_render.py, test_boss20.py, test_loading.py y test_kempston.py superadas; resultados en sus ficheros de salida. Otros logs corresponden a revisiones anteriores. Modelo Z80 nominal, no simula contención ULA ni escucha real.
+- En carga extrema, la reserva de aproximadamente 8.000 T-states puede aumentar la duración de un fotograma; pendiente verificar en Fuse.

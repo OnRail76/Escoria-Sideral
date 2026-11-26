@@ -1,0 +1,8 @@
+ESCORIA SIDERAL / Tony C. Ware
+ZX Spectrum 48K
+Logo 240x96, 30x12 caracteres. Posicion x=8 y=16.
+logo_color.asm o logo_mono.asm: elegir UNO, CALL logo_draw. Datos incluidos (2880 bitmap + 360 atributos).
+BIN bitmap por filas, 30 bytes/fila, bit 7 a izquierda. Atributos por filas de caracteres. Tiles por filas de caracteres, 8 bytes por tile, sin deduplicar.
+SCR: pantalla completa de 6912 bytes, cargar en 16384.
+Color: un ink rojo o blanco brillante por celda, paper negro. Aproximacion por restriccion de atributos; no mezcla rojo/blanco en una celda.
+PNG original incluido. Conversion y lectura de SCR verificadas; rutina ASM no ensamblada ni probada en emulador.

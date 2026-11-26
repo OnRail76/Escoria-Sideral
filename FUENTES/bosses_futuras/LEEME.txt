@@ -1,0 +1,1 @@
+Estados precompuestos de referencia 48x64, por filas, MSB izquierda: normal, parpadeo, impacto, ataque; 384 bytes cada uno, 1536 bytes total. El Mago ya está integrado en fase 3. Cocinero y Enfermera se reservan para fases 4-5.

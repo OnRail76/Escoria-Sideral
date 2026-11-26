@@ -1,0 +1,1 @@
+ALFA 0.20: test_boss20.py, test_nurse20.py, test_audio.py, test_render.py PASS. General test_cpu.py: partial run timed out after 124 sparse sprite combinations; no assertion failure observed. See test_results_full.txt. ULA, ROM hardware and audible quality not modeled.

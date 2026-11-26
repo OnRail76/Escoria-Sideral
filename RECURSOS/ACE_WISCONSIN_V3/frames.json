@@ -1,0 +1,233 @@
+{
+  "width": 32,
+  "height": 32,
+  "anchor": [
+    16,
+    31
+  ],
+  "muzzle": [
+    25,
+    15
+  ],
+  "groups": {
+    "idle": [
+      "ace_idle_0"
+    ],
+    "walk": [
+      "ace_walk_0",
+      "ace_walk_1",
+      "ace_walk_2",
+      "ace_walk_3",
+      "ace_walk_4",
+      "ace_walk_5"
+    ],
+    "walk_fire": [
+      "ace_walk_fire_0",
+      "ace_walk_fire_1",
+      "ace_walk_fire_2",
+      "ace_walk_fire_3",
+      "ace_walk_fire_4",
+      "ace_walk_fire_5"
+    ],
+    "fire": [
+      "ace_fire_0",
+      "ace_fire_1",
+      "ace_fire_2"
+    ],
+    "jump": [
+      "ace_jump_0",
+      "ace_jump_1",
+      "ace_jump_2",
+      "ace_jump_3"
+    ],
+    "crouch": [
+      "ace_crouch_0",
+      "ace_crouch_1",
+      "ace_crouch_2"
+    ],
+    "death": [
+      "ace_death_0",
+      "ace_death_1",
+      "ace_death_2",
+      "ace_death_3",
+      "ace_death_4",
+      "ace_death_5"
+    ]
+  },
+  "frames": [
+    {
+      "name": "ace_idle_0",
+      "index": 0,
+      "offset": 0,
+      "combined_offset": 0
+    },
+    {
+      "name": "ace_walk_0",
+      "index": 1,
+      "offset": 128,
+      "combined_offset": 256
+    },
+    {
+      "name": "ace_walk_1",
+      "index": 2,
+      "offset": 256,
+      "combined_offset": 512
+    },
+    {
+      "name": "ace_walk_2",
+      "index": 3,
+      "offset": 384,
+      "combined_offset": 768
+    },
+    {
+      "name": "ace_walk_3",
+      "index": 4,
+      "offset": 512,
+      "combined_offset": 1024
+    },
+    {
+      "name": "ace_walk_4",
+      "index": 5,
+      "offset": 640,
+      "combined_offset": 1280
+    },
+    {
+      "name": "ace_walk_5",
+      "index": 6,
+      "offset": 768,
+      "combined_offset": 1536
+    },
+    {
+      "name": "ace_walk_fire_0",
+      "index": 7,
+      "offset": 896,
+      "combined_offset": 1792
+    },
+    {
+      "name": "ace_walk_fire_1",
+      "index": 8,
+      "offset": 1024,
+      "combined_offset": 2048
+    },
+    {
+      "name": "ace_walk_fire_2",
+      "index": 9,
+      "offset": 1152,
+      "combined_offset": 2304
+    },
+    {
+      "name": "ace_walk_fire_3",
+      "index": 10,
+      "offset": 1280,
+      "combined_offset": 2560
+    },
+    {
+      "name": "ace_walk_fire_4",
+      "index": 11,
+      "offset": 1408,
+      "combined_offset": 2816
+    },
+    {
+      "name": "ace_walk_fire_5",
+      "index": 12,
+      "offset": 1536,
+      "combined_offset": 3072
+    },
+    {
+      "name": "ace_fire_0",
+      "index": 13,
+      "offset": 1664,
+      "combined_offset": 3328
+    },
+    {
+      "name": "ace_fire_1",
+      "index": 14,
+      "offset": 1792,
+      "combined_offset": 3584
+    },
+    {
+      "name": "ace_fire_2",
+      "index": 15,
+      "offset": 1920,
+      "combined_offset": 3840
+    },
+    {
+      "name": "ace_jump_0",
+      "index": 16,
+      "offset": 2048,
+      "combined_offset": 4096
+    },
+    {
+      "name": "ace_jump_1",
+      "index": 17,
+      "offset": 2176,
+      "combined_offset": 4352
+    },
+    {
+      "name": "ace_jump_2",
+      "index": 18,
+      "offset": 2304,
+      "combined_offset": 4608
+    },
+    {
+      "name": "ace_jump_3",
+      "index": 19,
+      "offset": 2432,
+      "combined_offset": 4864
+    },
+    {
+      "name": "ace_crouch_0",
+      "index": 20,
+      "offset": 2560,
+      "combined_offset": 5120
+    },
+    {
+      "name": "ace_crouch_1",
+      "index": 21,
+      "offset": 2688,
+      "combined_offset": 5376
+    },
+    {
+      "name": "ace_crouch_2",
+      "index": 22,
+      "offset": 2816,
+      "combined_offset": 5632
+    },
+    {
+      "name": "ace_death_0",
+      "index": 23,
+      "offset": 2944,
+      "combined_offset": 5888
+    },
+    {
+      "name": "ace_death_1",
+      "index": 24,
+      "offset": 3072,
+      "combined_offset": 6144
+    },
+    {
+      "name": "ace_death_2",
+      "index": 25,
+      "offset": 3200,
+      "combined_offset": 6400
+    },
+    {
+      "name": "ace_death_3",
+      "index": 26,
+      "offset": 3328,
+      "combined_offset": 6656
+    },
+    {
+      "name": "ace_death_4",
+      "index": 27,
+      "offset": 3456,
+      "combined_offset": 6912
+    },
+    {
+      "name": "ace_death_5",
+      "index": 28,
+      "offset": 3584,
+      "combined_offset": 7168
+    }
+  ]
+}

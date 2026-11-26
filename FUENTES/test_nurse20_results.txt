@@ -1,0 +1,2 @@
+PASS: nurse held FIRE, 808 updates, 23 horizontal attacks, 3 lightning, 4 meteors; both lanes, no overlapping hazards
+PASS: complete boss destruction and final SCR via actual dispatcher

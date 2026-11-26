@@ -1,0 +1,2 @@
+SEÑOR ALIEN — BOSS 01 / ZX Spectrum 48K
+Base fija 48x64, perfil izquierdo. Origen (208,suelo-64). Ojo 16x8 en (12,43), centro y=suelo-17; boca 16x8 en (8,55). Parches opacos sobre fondo negro, por filas, no alineados a caracteres. Proyectiles altos y bajos: centros suelo-27 y suelo-5; nacen en la boca y cambian de carril antes de avanzar. Ajustar colisiones y avisos en motor. Datos MSB izquierda, por filas; tiles en orden fila de caracteres. Fuego y explosiones copiados del boss 01 anterior, reutilizables. Demo SCR estática, no prueba de ejecución.

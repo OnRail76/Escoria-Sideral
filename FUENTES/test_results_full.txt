@@ -1,0 +1,30 @@
+PASS: ROM TAP headers, exact 19 bytes, types, flags, lengths and CODE address
+PASS: title SCR exact, SPACE and Kempston FIRE, release gate
+PASS: reverse six-frame gait and synchronized walk/fire transitions
+PASS: rifle-only overlap and landing safe; body contact lethal
+Spawn sample: slow 240 runners 15 rear 102 HP distribution [94, 81, 80] unique intervals 23
+Continuous movement occupancy: max 4 mean 3.29
+PASS: all rear-origin spawns walk; front runners retained
+Maximum rear-origin slots (including deaths): 1
+PASS: rear lock holds through crossing and dying
+PASS: 480 targeted meteor spawns, bounded and varied, no homing
+PASS: original moon bitmap/attributes; meteor crossing restores background
+PASS: meteor and boss projectile body bounds
+PASS: Senor 16 hits, first attack gate, 12-update damage cooldown, no stacked hits
+PASS: death guard, 100 ROM interrupts after respawn, blink visible/hidden, wrap, damage resumes
+PASS: bonus lives 1000/2500/4000, no duplicate award, two HUD digits, cap 99, restart reset
+PASS: game over returns to title; new game starts with fresh FIRE
+TAP: 24 checksummed blocks; code bytes 37069
+PASS: boot, 96 even scroll phases, movement-linked scroll, all Ace pose groups, zombie death, random spawns, meteor, HUD, boss high/low evasion, boss death, Kempston, end hold
+Nominal full load body T-states: 128785 erase alone: 32994 of 139776 nominal for 2 frames (no ULA/ROM overhead).
+PASS: city overlay, carry lives/score/bonus, exact backdrop, 186 meteor crossings, fine scroll
+PASS: witch fire rhythm and restart from rewound tape; ROM transfer simulated, not full emulator
+PASS: witch 22 valid eye hits and complete defeat animation
+PASS: phase 1 held FIRE, first damage 19, defeat 264 updates, 7 attacks launched, both lanes
+PASS: phase 2 held FIRE, first damage 19, defeat 359 updates, 11 attacks launched, both lanes
+PASS: cheat QAOP and Kempston, separate presses, visible confirmation, fresh FIRE, collision immunity, phase persistence and reset on title
+PASS: new boss normal/blink/hit/attack frame bytes match approved PNGs for all five phases
+PASS: exact final SCR, only phase 5 victory branch, 3-second hold, fresh FIRE, return to title; phase 3 does not consume final block
+PASS: all 124 sparse sprite frame/alignment combinations bit-exact against original bitmap AND mask
+
+INCOMPLETE: time limit, remaining general regression checks not completed in this run. Targeted boss, final, floor, audio and render tests are separate.

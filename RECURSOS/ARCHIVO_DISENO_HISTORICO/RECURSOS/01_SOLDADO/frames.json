@@ -1,0 +1,652 @@
+[
+  {
+    "name": "soldier_run_0_r",
+    "index": 0,
+    "bitmap_offset": 0,
+    "mask_offset": 0,
+    "pair_offset": 0,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_run_1_r",
+    "index": 1,
+    "bitmap_offset": 128,
+    "mask_offset": 128,
+    "pair_offset": 256,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_run_2_r",
+    "index": 2,
+    "bitmap_offset": 256,
+    "mask_offset": 256,
+    "pair_offset": 512,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_run_3_r",
+    "index": 3,
+    "bitmap_offset": 384,
+    "mask_offset": 384,
+    "pair_offset": 768,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_run_4_r",
+    "index": 4,
+    "bitmap_offset": 512,
+    "mask_offset": 512,
+    "pair_offset": 1024,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_idle_0_r",
+    "index": 5,
+    "bitmap_offset": 640,
+    "mask_offset": 640,
+    "pair_offset": 1280,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_aim_up_0_r",
+    "index": 6,
+    "bitmap_offset": 768,
+    "mask_offset": 768,
+    "pair_offset": 1536,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_aim_up_1_r",
+    "index": 7,
+    "bitmap_offset": 896,
+    "mask_offset": 896,
+    "pair_offset": 1792,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_aim_up_2_r",
+    "index": 8,
+    "bitmap_offset": 1024,
+    "mask_offset": 1024,
+    "pair_offset": 2048,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_crouch_0_r",
+    "index": 9,
+    "bitmap_offset": 1152,
+    "mask_offset": 1152,
+    "pair_offset": 2304,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_crouch_1_r",
+    "index": 10,
+    "bitmap_offset": 1280,
+    "mask_offset": 1280,
+    "pair_offset": 2560,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_crouch_2_r",
+    "index": 11,
+    "bitmap_offset": 1408,
+    "mask_offset": 1408,
+    "pair_offset": 2816,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_fire_0_r",
+    "index": 12,
+    "bitmap_offset": 1536,
+    "mask_offset": 1536,
+    "pair_offset": 3072,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_fire_1_r",
+    "index": 13,
+    "bitmap_offset": 1664,
+    "mask_offset": 1664,
+    "pair_offset": 3328,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_fire_2_r",
+    "index": 14,
+    "bitmap_offset": 1792,
+    "mask_offset": 1792,
+    "pair_offset": 3584,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_jump_0_r",
+    "index": 15,
+    "bitmap_offset": 1920,
+    "mask_offset": 1920,
+    "pair_offset": 3840,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_jump_1_r",
+    "index": 16,
+    "bitmap_offset": 2048,
+    "mask_offset": 2048,
+    "pair_offset": 4096,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_jump_2_r",
+    "index": 17,
+    "bitmap_offset": 2176,
+    "mask_offset": 2176,
+    "pair_offset": 4352,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_jump_3_r",
+    "index": 18,
+    "bitmap_offset": 2304,
+    "mask_offset": 2304,
+    "pair_offset": 4608,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_death_0_r",
+    "index": 19,
+    "bitmap_offset": 2432,
+    "mask_offset": 2432,
+    "pair_offset": 4864,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_death_1_r",
+    "index": 20,
+    "bitmap_offset": 2560,
+    "mask_offset": 2560,
+    "pair_offset": 5120,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_death_2_r",
+    "index": 21,
+    "bitmap_offset": 2688,
+    "mask_offset": 2688,
+    "pair_offset": 5376,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_death_3_r",
+    "index": 22,
+    "bitmap_offset": 2816,
+    "mask_offset": 2816,
+    "pair_offset": 5632,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_death_4_r",
+    "index": 23,
+    "bitmap_offset": 2944,
+    "mask_offset": 2944,
+    "pair_offset": 5888,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_death_5_r",
+    "index": 24,
+    "bitmap_offset": 3072,
+    "mask_offset": 3072,
+    "pair_offset": 6144,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_run_0_l",
+    "index": 25,
+    "bitmap_offset": 3200,
+    "mask_offset": 3200,
+    "pair_offset": 6400,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_run_1_l",
+    "index": 26,
+    "bitmap_offset": 3328,
+    "mask_offset": 3328,
+    "pair_offset": 6656,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_run_2_l",
+    "index": 27,
+    "bitmap_offset": 3456,
+    "mask_offset": 3456,
+    "pair_offset": 6912,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_run_3_l",
+    "index": 28,
+    "bitmap_offset": 3584,
+    "mask_offset": 3584,
+    "pair_offset": 7168,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_run_4_l",
+    "index": 29,
+    "bitmap_offset": 3712,
+    "mask_offset": 3712,
+    "pair_offset": 7424,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_idle_0_l",
+    "index": 30,
+    "bitmap_offset": 3840,
+    "mask_offset": 3840,
+    "pair_offset": 7680,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_aim_up_0_l",
+    "index": 31,
+    "bitmap_offset": 3968,
+    "mask_offset": 3968,
+    "pair_offset": 7936,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_aim_up_1_l",
+    "index": 32,
+    "bitmap_offset": 4096,
+    "mask_offset": 4096,
+    "pair_offset": 8192,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_aim_up_2_l",
+    "index": 33,
+    "bitmap_offset": 4224,
+    "mask_offset": 4224,
+    "pair_offset": 8448,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_crouch_0_l",
+    "index": 34,
+    "bitmap_offset": 4352,
+    "mask_offset": 4352,
+    "pair_offset": 8704,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_crouch_1_l",
+    "index": 35,
+    "bitmap_offset": 4480,
+    "mask_offset": 4480,
+    "pair_offset": 8960,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_crouch_2_l",
+    "index": 36,
+    "bitmap_offset": 4608,
+    "mask_offset": 4608,
+    "pair_offset": 9216,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_fire_0_l",
+    "index": 37,
+    "bitmap_offset": 4736,
+    "mask_offset": 4736,
+    "pair_offset": 9472,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_fire_1_l",
+    "index": 38,
+    "bitmap_offset": 4864,
+    "mask_offset": 4864,
+    "pair_offset": 9728,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_fire_2_l",
+    "index": 39,
+    "bitmap_offset": 4992,
+    "mask_offset": 4992,
+    "pair_offset": 9984,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_jump_0_l",
+    "index": 40,
+    "bitmap_offset": 5120,
+    "mask_offset": 5120,
+    "pair_offset": 10240,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_jump_1_l",
+    "index": 41,
+    "bitmap_offset": 5248,
+    "mask_offset": 5248,
+    "pair_offset": 10496,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_jump_2_l",
+    "index": 42,
+    "bitmap_offset": 5376,
+    "mask_offset": 5376,
+    "pair_offset": 10752,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_jump_3_l",
+    "index": 43,
+    "bitmap_offset": 5504,
+    "mask_offset": 5504,
+    "pair_offset": 11008,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_death_0_l",
+    "index": 44,
+    "bitmap_offset": 5632,
+    "mask_offset": 5632,
+    "pair_offset": 11264,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_death_1_l",
+    "index": 45,
+    "bitmap_offset": 5760,
+    "mask_offset": 5760,
+    "pair_offset": 11520,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_death_2_l",
+    "index": 46,
+    "bitmap_offset": 5888,
+    "mask_offset": 5888,
+    "pair_offset": 11776,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_death_3_l",
+    "index": 47,
+    "bitmap_offset": 6016,
+    "mask_offset": 6016,
+    "pair_offset": 12032,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_death_4_l",
+    "index": 48,
+    "bitmap_offset": 6144,
+    "mask_offset": 6144,
+    "pair_offset": 12288,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "soldier_death_5_l",
+    "index": 49,
+    "bitmap_offset": 6272,
+    "mask_offset": 6272,
+    "pair_offset": 12544,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  }
+]

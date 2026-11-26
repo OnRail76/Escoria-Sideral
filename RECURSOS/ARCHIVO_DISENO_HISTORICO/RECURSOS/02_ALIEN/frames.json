@@ -1,0 +1,314 @@
+[
+  {
+    "name": "alien_run_0_r",
+    "index": 0,
+    "bitmap_offset": 0,
+    "mask_offset": 0,
+    "pair_offset": 0,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_run_1_r",
+    "index": 1,
+    "bitmap_offset": 128,
+    "mask_offset": 128,
+    "pair_offset": 256,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_run_2_r",
+    "index": 2,
+    "bitmap_offset": 256,
+    "mask_offset": 256,
+    "pair_offset": 512,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_run_3_r",
+    "index": 3,
+    "bitmap_offset": 384,
+    "mask_offset": 384,
+    "pair_offset": 768,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_run_4_r",
+    "index": 4,
+    "bitmap_offset": 512,
+    "mask_offset": 512,
+    "pair_offset": 1024,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_run_5_r",
+    "index": 5,
+    "bitmap_offset": 640,
+    "mask_offset": 640,
+    "pair_offset": 1280,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_death_0_r",
+    "index": 6,
+    "bitmap_offset": 768,
+    "mask_offset": 768,
+    "pair_offset": 1536,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_death_1_r",
+    "index": 7,
+    "bitmap_offset": 896,
+    "mask_offset": 896,
+    "pair_offset": 1792,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_death_2_r",
+    "index": 8,
+    "bitmap_offset": 1024,
+    "mask_offset": 1024,
+    "pair_offset": 2048,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_death_3_r",
+    "index": 9,
+    "bitmap_offset": 1152,
+    "mask_offset": 1152,
+    "pair_offset": 2304,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_death_4_r",
+    "index": 10,
+    "bitmap_offset": 1280,
+    "mask_offset": 1280,
+    "pair_offset": 2560,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_death_5_r",
+    "index": 11,
+    "bitmap_offset": 1408,
+    "mask_offset": 1408,
+    "pair_offset": 2816,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_run_0_l",
+    "index": 12,
+    "bitmap_offset": 1536,
+    "mask_offset": 1536,
+    "pair_offset": 3072,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_run_1_l",
+    "index": 13,
+    "bitmap_offset": 1664,
+    "mask_offset": 1664,
+    "pair_offset": 3328,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_run_2_l",
+    "index": 14,
+    "bitmap_offset": 1792,
+    "mask_offset": 1792,
+    "pair_offset": 3584,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_run_3_l",
+    "index": 15,
+    "bitmap_offset": 1920,
+    "mask_offset": 1920,
+    "pair_offset": 3840,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_run_4_l",
+    "index": 16,
+    "bitmap_offset": 2048,
+    "mask_offset": 2048,
+    "pair_offset": 4096,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_run_5_l",
+    "index": 17,
+    "bitmap_offset": 2176,
+    "mask_offset": 2176,
+    "pair_offset": 4352,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_death_0_l",
+    "index": 18,
+    "bitmap_offset": 2304,
+    "mask_offset": 2304,
+    "pair_offset": 4608,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_death_1_l",
+    "index": 19,
+    "bitmap_offset": 2432,
+    "mask_offset": 2432,
+    "pair_offset": 4864,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_death_2_l",
+    "index": 20,
+    "bitmap_offset": 2560,
+    "mask_offset": 2560,
+    "pair_offset": 5120,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_death_3_l",
+    "index": 21,
+    "bitmap_offset": 2688,
+    "mask_offset": 2688,
+    "pair_offset": 5376,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_death_4_l",
+    "index": 22,
+    "bitmap_offset": 2816,
+    "mask_offset": 2816,
+    "pair_offset": 5632,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  },
+  {
+    "name": "alien_death_5_l",
+    "index": 23,
+    "bitmap_offset": 2944,
+    "mask_offset": 2944,
+    "pair_offset": 5888,
+    "width": 32,
+    "height": 32,
+    "pivot": [
+      16,
+      31
+    ]
+  }
+]

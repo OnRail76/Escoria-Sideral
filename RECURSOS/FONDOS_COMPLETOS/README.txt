@@ -1,0 +1,1 @@
+ESCORIA SIDERAL — Fondos fijos. Luna y Barcelona V2 originales sin cambios. Fases 3–5: conversión de la lámina conceptual a 256x48, con reducción de detalle. No son mockups. Sin animación ni colisiones. Cargar únicamente el formato gráfico necesario. No probado en motor.

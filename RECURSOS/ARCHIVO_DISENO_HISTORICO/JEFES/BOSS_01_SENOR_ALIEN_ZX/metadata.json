@@ -1,0 +1,103 @@
+{
+  "senor_base": {
+    "width": 48,
+    "height": 64,
+    "offset": 0,
+    "bytes": 384,
+    "tile_offset": 0
+  },
+  "ojo_normal": {
+    "width": 16,
+    "height": 8,
+    "offset": 384,
+    "bytes": 16,
+    "tile_offset": 384
+  },
+  "ojo_cerrado": {
+    "width": 16,
+    "height": 8,
+    "offset": 400,
+    "bytes": 16,
+    "tile_offset": 400
+  },
+  "ojo_impacto": {
+    "width": 16,
+    "height": 8,
+    "offset": 416,
+    "bytes": 16,
+    "tile_offset": 416
+  },
+  "boca_cerrada": {
+    "width": 16,
+    "height": 8,
+    "offset": 432,
+    "bytes": 16,
+    "tile_offset": 432
+  },
+  "boca_abierta": {
+    "width": 16,
+    "height": 8,
+    "offset": 448,
+    "bytes": 16,
+    "tile_offset": 448
+  },
+  "fuego_0": {
+    "width": 16,
+    "height": 8,
+    "offset": 464,
+    "bytes": 16,
+    "tile_offset": 464
+  },
+  "fuego_1": {
+    "width": 16,
+    "height": 8,
+    "offset": 480,
+    "bytes": 16,
+    "tile_offset": 480
+  },
+  "fuego_2": {
+    "width": 16,
+    "height": 8,
+    "offset": 496,
+    "bytes": 16,
+    "tile_offset": 496
+  },
+  "explosion_0": {
+    "width": 16,
+    "height": 16,
+    "offset": 512,
+    "bytes": 32,
+    "tile_offset": 512
+  },
+  "explosion_1": {
+    "width": 16,
+    "height": 16,
+    "offset": 544,
+    "bytes": 32,
+    "tile_offset": 544
+  },
+  "explosion_2": {
+    "width": 16,
+    "height": 16,
+    "offset": 576,
+    "bytes": 32,
+    "tile_offset": 576
+  },
+  "placement": {
+    "boss_x": 208,
+    "boss_y_relative_to_floor": -64,
+    "eye_patch": [
+      12,
+      43
+    ],
+    "eye_center_y_relative_to_floor": -17,
+    "mouth_patch": [
+      8,
+      55
+    ],
+    "projectile_y_relative_to_floor": [
+      -27,
+      -5
+    ]
+  }
+}

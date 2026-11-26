@@ -1,0 +1,2 @@
+ACE V3 — ESCORIA SIDERAL
+Original conservado: reposo, salto, agacharse y muerte (seis poses exactas). Caminata: piernas adaptadas a paso corto, torso original. Fuego: torso original de run_0, fogonazo corto. Solo derecha. Motor: bloquear disparo en salto y agachado, salto vertical, sin giro ni carrera. Ancla (16,31), boca del rifle (25,15). 128 bytes por plano, cuatro bytes por fila, MSB izquierda. Mascara AND, sprite OR. chars_8x8: orden por filas de tiles. Reproducir agacharse al reves para levantar. No incluye motor ni prueba emulador. 29 frames, 7424 bytes con mascaras.

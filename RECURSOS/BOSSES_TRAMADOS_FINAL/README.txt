@@ -1,0 +1,4 @@
+ESCORIA SIDERAL — cinco jefes tramados definitivos
+Datos por filas, MSB izquierda. Cuerpo 48x64, 384 bytes. Parches opacos: ojo 16x16, boca 16x8; coordenadas en metadata.json, relativas al cuerpo. Sustituir bancos anteriores, no mezclar. Cargar cuerpo y copiar parche seleccionado sobre él (no OR). Para restaurar usar ojo_normal y boca_cerrada. Los archivos SCR muestran cada estado real, no el motor.
+El ojo se alinea en y=47 (suelo-17) mediante reescalado vertical por secciones del original aprobado; se incluyen originales intactos. El fusil de Ace V3 está en y=15 de 32. La boca se anima en las últimas 8 filas; revisar visualmente en juego.
+Efectos comunes: fuego horizontal, fuego vertical, rayos y explosión. No plumas. Ataques altos/bajos y avisos de ataques verticales se implementan en el motor; la cadencia y resistencia quedan a cargo del juego. No se incluye código del motor ni se ha compilado o probado en emulador. Usar offsets nuevos, no los antiguos.

@@ -1,0 +1,1 @@
+V1_fase*.png y V1_jefe*.png: escenas de VRAM obtenidas con el modelo Z80 de la versión definitiva (situaciones de prueba, no fotografías ni mockups). captura_titulo_v1.png: SCR definitivo convertido a PNG. Resto de capturas: banco de pruebas suministrado por la 0.21.2; HISTORICO_019 está separado.

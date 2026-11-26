@@ -1,0 +1,90 @@
+{
+  "fuego_0": {
+    "width": 16,
+    "height": 8,
+    "offset": 0,
+    "bytes": 16,
+    "tile_offset": 0,
+    "shared": true
+  },
+  "fuego_1": {
+    "width": 16,
+    "height": 8,
+    "offset": 16,
+    "bytes": 16,
+    "tile_offset": 16,
+    "shared": true
+  },
+  "fuego_2": {
+    "width": 16,
+    "height": 8,
+    "offset": 32,
+    "bytes": 16,
+    "tile_offset": 32,
+    "shared": true
+  },
+  "rayo_0": {
+    "width": 8,
+    "height": 16,
+    "offset": 48,
+    "bytes": 16,
+    "tile_offset": 48,
+    "shared": true
+  },
+  "rayo_1": {
+    "width": 8,
+    "height": 16,
+    "offset": 64,
+    "bytes": 16,
+    "tile_offset": 64,
+    "shared": true
+  },
+  "explosion_0": {
+    "width": 16,
+    "height": 16,
+    "offset": 80,
+    "bytes": 32,
+    "tile_offset": 80,
+    "shared": true
+  },
+  "explosion_1": {
+    "width": 16,
+    "height": 16,
+    "offset": 112,
+    "bytes": 32,
+    "tile_offset": 112,
+    "shared": true
+  },
+  "explosion_2": {
+    "width": 16,
+    "height": 16,
+    "offset": 144,
+    "bytes": 32,
+    "tile_offset": 144,
+    "shared": true
+  },
+  "fuego_caida_0": {
+    "width": 8,
+    "height": 16,
+    "offset": 176,
+    "bytes": 16,
+    "tile_offset": 176,
+    "shared": true
+  },
+  "fuego_caida_1": {
+    "width": 8,
+    "height": 16,
+    "offset": 192,
+    "bytes": 16,
+    "tile_offset": 192,
+    "shared": true
+  },
+  "fuego_caida_2": {
+    "width": 8,
+    "height": 16,
+    "offset": 208,
+    "bytes": 16,
+    "tile_offset": 208,
+    "shared": true
+  }
+}

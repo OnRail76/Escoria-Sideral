@@ -1,0 +1,2 @@
+BRUJA ALIEN — BOSS 02 / ZX Spectrum 48K
+Base fija 48x64, perfil izquierdo. Origen (208,suelo-64). Ojo 16x8 en (12,43), centro y=suelo-17; boca 16x8 en (8,55). Parches opacos por filas, no alineados a caracteres: componer en RAM o desplazar bits antes de dibujar. Datos MSB izquierda. Tiles por filas de caracteres. 464 bytes propios, 144 compartidos con boss 01. Ataque propuesto: rafagas alternas de 2-3 bolas, altas/bajas, con aviso y ventana segura; no implementado. Demo SCR estatica.

@@ -1,0 +1,2 @@
+MAGO ALIEN - BOSS 03 - ZX Spectrum 48K
+48x64, perfil izquierdo, fijo en x=208, y=suelo-64. Ojo 16x8 en (12,43), centro y=suelo-17. Boca 16x8 en (8,55). Parches opacos no alineados a caracteres: componer en RAM. MSB izquierda, filas consecutivas; tiles por filas de caracteres. 464 bytes propios, 176 bytes compartidos (rayos, fuego, explosion). Ataque del Pulpo de Saturno sin cambios: fuego alto/bajo y rayos verticales con aviso. Patrones no implementados. Demo SCR estatica.

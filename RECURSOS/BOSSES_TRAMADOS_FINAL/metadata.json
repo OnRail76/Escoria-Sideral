@@ -1,0 +1,397 @@
+{
+  "senor": {
+    "senor_base": {
+      "width": 48,
+      "height": 64,
+      "offset": 0,
+      "bytes": 384,
+      "tile_offset": 0,
+      "global_offset": 0
+    },
+    "ojo_normal": {
+      "width": 16,
+      "height": 16,
+      "offset": 384,
+      "bytes": 32,
+      "tile_offset": 384,
+      "global_offset": 384
+    },
+    "ojo_cerrado": {
+      "width": 16,
+      "height": 16,
+      "offset": 416,
+      "bytes": 32,
+      "tile_offset": 416,
+      "global_offset": 416
+    },
+    "ojo_impacto": {
+      "width": 16,
+      "height": 16,
+      "offset": 448,
+      "bytes": 32,
+      "tile_offset": 448,
+      "global_offset": 448
+    },
+    "boca_cerrada": {
+      "width": 16,
+      "height": 8,
+      "offset": 480,
+      "bytes": 16,
+      "tile_offset": 480,
+      "global_offset": 480
+    },
+    "boca_abierta": {
+      "width": 16,
+      "height": 8,
+      "offset": 496,
+      "bytes": 16,
+      "tile_offset": 496,
+      "global_offset": 496
+    },
+    "placement": {
+      "boss_x": 208,
+      "boss_y_relative_to_floor": -64,
+      "eye_patch": [
+        0,
+        40
+      ],
+      "eye_center_y_relative_to_floor": -17,
+      "eye_hitbox": [
+        9,
+        43,
+        9,
+        9
+      ],
+      "mouth_patch": [
+        8,
+        56
+      ],
+      "projectile_y_relative_to_floor": [
+        -27,
+        -5
+      ]
+    },
+    "attacks": {
+      "horizontal": true,
+      "lightning": false,
+      "falling_fire": false,
+      "burst": 1
+    }
+  },
+  "bruja": {
+    "bruja_base": {
+      "width": 48,
+      "height": 64,
+      "offset": 0,
+      "bytes": 384,
+      "tile_offset": 0,
+      "global_offset": 512
+    },
+    "ojo_normal": {
+      "width": 16,
+      "height": 16,
+      "offset": 384,
+      "bytes": 32,
+      "tile_offset": 384,
+      "global_offset": 896
+    },
+    "ojo_cerrado": {
+      "width": 16,
+      "height": 16,
+      "offset": 416,
+      "bytes": 32,
+      "tile_offset": 416,
+      "global_offset": 928
+    },
+    "ojo_impacto": {
+      "width": 16,
+      "height": 16,
+      "offset": 448,
+      "bytes": 32,
+      "tile_offset": 448,
+      "global_offset": 960
+    },
+    "boca_cerrada": {
+      "width": 16,
+      "height": 8,
+      "offset": 480,
+      "bytes": 16,
+      "tile_offset": 480,
+      "global_offset": 992
+    },
+    "boca_abierta": {
+      "width": 16,
+      "height": 8,
+      "offset": 496,
+      "bytes": 16,
+      "tile_offset": 496,
+      "global_offset": 1008
+    },
+    "placement": {
+      "boss_x": 208,
+      "boss_y_relative_to_floor": -64,
+      "eye_patch": [
+        8,
+        40
+      ],
+      "eye_center_y_relative_to_floor": -17,
+      "eye_hitbox": [
+        12,
+        43,
+        9,
+        9
+      ],
+      "mouth_patch": [
+        8,
+        56
+      ],
+      "projectile_y_relative_to_floor": [
+        -27,
+        -5
+      ]
+    },
+    "attacks": {
+      "horizontal": true,
+      "lightning": false,
+      "falling_fire": false,
+      "burst": 3
+    }
+  },
+  "mago": {
+    "mago_base": {
+      "width": 48,
+      "height": 64,
+      "offset": 0,
+      "bytes": 384,
+      "tile_offset": 0,
+      "global_offset": 1024
+    },
+    "ojo_normal": {
+      "width": 16,
+      "height": 16,
+      "offset": 384,
+      "bytes": 32,
+      "tile_offset": 384,
+      "global_offset": 1408
+    },
+    "ojo_cerrado": {
+      "width": 16,
+      "height": 16,
+      "offset": 416,
+      "bytes": 32,
+      "tile_offset": 416,
+      "global_offset": 1440
+    },
+    "ojo_impacto": {
+      "width": 16,
+      "height": 16,
+      "offset": 448,
+      "bytes": 32,
+      "tile_offset": 448,
+      "global_offset": 1472
+    },
+    "boca_cerrada": {
+      "width": 16,
+      "height": 8,
+      "offset": 480,
+      "bytes": 16,
+      "tile_offset": 480,
+      "global_offset": 1504
+    },
+    "boca_abierta": {
+      "width": 16,
+      "height": 8,
+      "offset": 496,
+      "bytes": 16,
+      "tile_offset": 496,
+      "global_offset": 1520
+    },
+    "placement": {
+      "boss_x": 208,
+      "boss_y_relative_to_floor": -64,
+      "eye_patch": [
+        0,
+        40
+      ],
+      "eye_center_y_relative_to_floor": -17,
+      "eye_hitbox": [
+        11,
+        43,
+        9,
+        9
+      ],
+      "mouth_patch": [
+        8,
+        56
+      ],
+      "projectile_y_relative_to_floor": [
+        -27,
+        -5
+      ]
+    },
+    "attacks": {
+      "horizontal": true,
+      "lightning": true,
+      "falling_fire": false,
+      "burst": 3
+    }
+  },
+  "cocinero": {
+    "cocinero_base": {
+      "width": 48,
+      "height": 64,
+      "offset": 0,
+      "bytes": 384,
+      "tile_offset": 0,
+      "global_offset": 1536
+    },
+    "ojo_normal": {
+      "width": 16,
+      "height": 16,
+      "offset": 384,
+      "bytes": 32,
+      "tile_offset": 384,
+      "global_offset": 1920
+    },
+    "ojo_cerrado": {
+      "width": 16,
+      "height": 16,
+      "offset": 416,
+      "bytes": 32,
+      "tile_offset": 416,
+      "global_offset": 1952
+    },
+    "ojo_impacto": {
+      "width": 16,
+      "height": 16,
+      "offset": 448,
+      "bytes": 32,
+      "tile_offset": 448,
+      "global_offset": 1984
+    },
+    "boca_cerrada": {
+      "width": 16,
+      "height": 8,
+      "offset": 480,
+      "bytes": 16,
+      "tile_offset": 480,
+      "global_offset": 2016
+    },
+    "boca_abierta": {
+      "width": 16,
+      "height": 8,
+      "offset": 496,
+      "bytes": 16,
+      "tile_offset": 496,
+      "global_offset": 2032
+    },
+    "placement": {
+      "boss_x": 208,
+      "boss_y_relative_to_floor": -64,
+      "eye_patch": [
+        0,
+        40
+      ],
+      "eye_center_y_relative_to_floor": -17,
+      "eye_hitbox": [
+        9,
+        43,
+        9,
+        9
+      ],
+      "mouth_patch": [
+        8,
+        56
+      ],
+      "projectile_y_relative_to_floor": [
+        -27,
+        -5
+      ]
+    },
+    "attacks": {
+      "horizontal": true,
+      "lightning": false,
+      "falling_fire": true,
+      "burst": 3
+    }
+  },
+  "enfermera": {
+    "enfermera_base": {
+      "width": 48,
+      "height": 64,
+      "offset": 0,
+      "bytes": 384,
+      "tile_offset": 0,
+      "global_offset": 2048
+    },
+    "ojo_normal": {
+      "width": 16,
+      "height": 16,
+      "offset": 384,
+      "bytes": 32,
+      "tile_offset": 384,
+      "global_offset": 2432
+    },
+    "ojo_cerrado": {
+      "width": 16,
+      "height": 16,
+      "offset": 416,
+      "bytes": 32,
+      "tile_offset": 416,
+      "global_offset": 2464
+    },
+    "ojo_impacto": {
+      "width": 16,
+      "height": 16,
+      "offset": 448,
+      "bytes": 32,
+      "tile_offset": 448,
+      "global_offset": 2496
+    },
+    "boca_cerrada": {
+      "width": 16,
+      "height": 8,
+      "offset": 480,
+      "bytes": 16,
+      "tile_offset": 480,
+      "global_offset": 2528
+    },
+    "boca_abierta": {
+      "width": 16,
+      "height": 8,
+      "offset": 496,
+      "bytes": 16,
+      "tile_offset": 496,
+      "global_offset": 2544
+    },
+    "placement": {
+      "boss_x": 208,
+      "boss_y_relative_to_floor": -64,
+      "eye_patch": [
+        0,
+        40
+      ],
+      "eye_center_y_relative_to_floor": -17,
+      "eye_hitbox": [
+        10,
+        43,
+        9,
+        9
+      ],
+      "mouth_patch": [
+        8,
+        56
+      ],
+      "projectile_y_relative_to_floor": [
+        -27,
+        -5
+      ]
+    },
+    "attacks": {
+      "horizontal": true,
+      "lightning": true,
+      "falling_fire": true,
+      "burst": 3
+    }
+  }
+}

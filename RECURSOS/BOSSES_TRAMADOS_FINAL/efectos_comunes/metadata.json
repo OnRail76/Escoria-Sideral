@@ -1,0 +1,68 @@
+{
+  "fuego_0": {
+    "width": 16,
+    "height": 8,
+    "offset": 0,
+    "bytes": 16
+  },
+  "fuego_1": {
+    "width": 16,
+    "height": 8,
+    "offset": 16,
+    "bytes": 16
+  },
+  "fuego_2": {
+    "width": 16,
+    "height": 8,
+    "offset": 32,
+    "bytes": 16
+  },
+  "fuego_caida_0": {
+    "width": 8,
+    "height": 16,
+    "offset": 48,
+    "bytes": 16
+  },
+  "fuego_caida_1": {
+    "width": 8,
+    "height": 16,
+    "offset": 64,
+    "bytes": 16
+  },
+  "fuego_caida_2": {
+    "width": 8,
+    "height": 16,
+    "offset": 80,
+    "bytes": 16
+  },
+  "rayo_0": {
+    "width": 8,
+    "height": 16,
+    "offset": 96,
+    "bytes": 16
+  },
+  "rayo_1": {
+    "width": 8,
+    "height": 16,
+    "offset": 112,
+    "bytes": 16
+  },
+  "explosion_0": {
+    "width": 16,
+    "height": 16,
+    "offset": 128,
+    "bytes": 32
+  },
+  "explosion_1": {
+    "width": 16,
+    "height": 16,
+    "offset": 160,
+    "bytes": 32
+  },
+  "explosion_2": {
+    "width": 16,
+    "height": 16,
+    "offset": 192,
+    "bytes": 32
+  }
+}

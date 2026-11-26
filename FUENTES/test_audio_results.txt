@@ -1,0 +1,13 @@
+beep 2 IRQ ticks; 81 FE writes; deadline and priority PASS
+sfx_hit 2 IRQ ticks; 113 FE writes; deadline and priority PASS
+sfx_kill 4 IRQ ticks; 123 FE writes; deadline and priority PASS
+sfx_bossfire 3 IRQ ticks; 111 FE writes; deadline and priority PASS
+sfx_meteor 5 IRQ ticks; 129 FE writes; deadline and priority PASS
+sfx_lightning 6 IRQ ticks; 384 FE writes; deadline and priority PASS
+sfx_bonus 8 IRQ ticks; 360 FE writes; deadline and priority PASS
+sfx_death 12 IRQ ticks; 333 FE writes; deadline and priority PASS
+sfx_bossdead 15 IRQ ticks; 400 FE writes; deadline and priority PASS
+title one-shot and silence after end PASS
+gameover one-shot jingle, existing 3-second hold PASS
+win one-shot jingle, existing 3-second hold PASS
+Actual shot, loss, extra life, boss fire, meteor and lightning event routing PASS

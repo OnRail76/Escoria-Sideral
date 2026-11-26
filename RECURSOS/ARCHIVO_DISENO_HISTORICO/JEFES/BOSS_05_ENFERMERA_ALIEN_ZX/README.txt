@@ -1,0 +1,2 @@
+ENFERMERA ALIEN - BOSS 05 - ZX Spectrum 48K
+48x64, perfil izquierdo. Parches opacos: ojo 16x16 en (8,39), boca 24x8 en (8,53). Centro vulnerable y=suelo-17. Componer en RAM. MSB izquierda, filas consecutivas; tiles por filas de caracteres. Fuego en caida: mismos 3 frames horizontales rotados 90 grados antihorario. Sustituye plumas en todos los bosses que las usaban (boss 4 y 5); actualizar indices y dimensiones 8x16. No se modifica el ZIP del boss 4. Logica y prueba en emulador pendientes. Demo SCR estatica.

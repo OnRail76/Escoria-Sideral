@@ -1,0 +1,6 @@
+PASS stage 1 unchanged VRAM during composition, exact publication, overlapping sprites and four boss poses
+PASS stage 2 unchanged VRAM during composition, exact publication, overlapping sprites and four boss poses
+PASS stage 3 unchanged VRAM during composition, exact publication, overlapping sprites and four boss poses
+PASS stage 4 unchanged VRAM during composition, exact publication, overlapping sprites and four boss poses
+PASS stage 5 unchanged VRAM during composition, exact publication, overlapping sprites and four boss poses
+PASS: 300 staged updates. Peak sampled body: 128699 nominal T-states; no ULA contention model.
