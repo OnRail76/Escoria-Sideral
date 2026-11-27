@@ -4,19 +4,41 @@ P=Path(__file__).resolve().parent
 src=(P/'test_cpu.py').read_text();ns={'__file__':str(P/'test_cpu.py')}
 exec(compile(src[:src.index('assert i==len(tap)')],str(P/'test_cpu.py'),'exec'),ns)
 CPU,S=ns['CPU'],ns['S']
-# Test all port values, including high bits, disconnected $ff and impossible directions.
-for raw in range(256):
- for keys in (0,1,2,4,8,16,17,24):
-  c=CPU();c.joy=raw;c.keys=keys;c.set('joy',1);c.sub('input');c.finish()
-  j=raw&31;valid=(j&3)!=3 and (j&12)!=12
-  assert c.v('keys')==keys|(j if valid else 0),(raw,keys,c.v('keys'))
-print('PASS: 2048 input combinations, upper bits ignored, impossible directions rejected, keyboard always enabled')
-c=ns['boot']();assert c.v('joy')==0
-c.joy=1;c.step_frame();assert c.v('joy')==1 and c.v('scroll')==2
+# Every port byte in every selected mode, independent of keyboard input.
+for mode in (0,1,2):
+ for raw in range(256):
+  for keys in (0,1,2,4,8,16,17,24):
+   c=CPU();c.joy=raw;c.keys=keys;c.set('joy',mode);c.sub('input');c.finish()
+   valid=mode!=2 and raw<32 and (raw&3)!=3 and (raw&12)!=12
+   assert c.v('keys')==keys|(raw if valid else 0),(mode,raw,keys,c.v('keys'))
+   assert c.v('joy')==mode
+print('PASS: 6144 mode/port/keyboard combinations, invalid full bytes rejected, keyboard mode ignores port')
+class NoisyCPU(CPU):
+ def __init__(self,seq):super().__init__();self.samples=iter(seq);self.polls=0
+ def step(self):
+  if self.m[self.pc:self.pc+2]==bytes([0xed,0x78]) and self.pair(0)==0x001f:
+   self.polls+=1;self.joy=next(self.samples)
+  super().step()
+for mode in (0,1):
+ for seq in ((8,0,0),(16,16,0),(24,8,24),(16,240,16),(1,2,1),(255,0,0),(248,248,248)):
+  c=NoisyCPU(seq);c.set('joy',mode);c.keys=1;c.sub('input');c.finish();assert c.v('keys')==1,(mode,seq,c.v('keys'))
+for seq in ((8,8,8),(16,16,16),(25,25,25)):
+ c=NoisyCPU(seq);c.set('joy',1);c.sub('input');c.finish();assert c.v('keys')==seq[0] and c.polls==3
+c=NoisyCPU([]);c.set('joy',2);c.keys=16;c.sub('input');c.finish();assert c.polls==0 and c.v('keys')==16
+print('PASS: inconsistent samples ignored, valid stable Kempston accepted, zero port reads in keyboard mode')
+c=ns['boot']();assert c.v('joy')==2
+for raw in (8,16,24,1,2,255,248,0)*5:
+ c.joy=raw;c.set('spawn_delay',255);c.set('hdelay',255);c.step_frame();assert c.v('jump')==255 and c.v('keys')==0 and c.v('scroll')==0 and all(c.v(f'b{i}on')==0 for i in range(3))
+c.joy=24;c.step_frame(8);assert c.v('jump')!=255
+print('PASS: idle Ace stays still with synthetic ghost jump/fire; intentional Q works')
+c=ns['start_from_title'](CPU(),True);assert c.v('joy')==1
+c.joy=1;c.step_frame();assert c.v('scroll')==2
 c.joy=2;c.step_frame();assert c.v('px')==78
 c.joy=8;c.step_frame();assert c.v('jump')!=255
 c.joy=255;c.step_frame(1);assert c.v('px')==80
-print('PASS: keyboard start -> joystick right/left/jump without FIRE -> keyboard after disconnected joystick')
+print('PASS: FIRE selects Kempston; right/left/jump and keyboard fallback')
+c=CPU();c.run_to('title_press');c.keys=16;c.joy=16;c.run_to('title_start_release');c.keys=c.joy=0;c.run_to('loop');assert c.v('joy')==2
+print('PASS: physical SPACE has priority at title')
 # Title and hidden selector helpers from the original regression, without running unrelated expensive checks.
 exec(src[src.index('def title_tick'):src.index('for use_joy in (False,True):')],ns)
 exec(src[src.index('def select_boot'):src.index('for j in (False,True):')],ns)

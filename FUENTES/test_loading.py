@@ -3,7 +3,7 @@ from pathlib import Path
 import struct, zipfile
 from loading import split,stub,STUB_ADDR,wrap
 P=Path(__file__).resolve().parent
-base=(P/'base_sin_carga.tap').read_bytes();tap=(P/'ESCORIA_SIDERAL_ALFA_21_2.tap').read_bytes();blocks=split(tap);old=split(base)
+base=(P/'base_sin_carga.tap').read_bytes();tap=(P/'ESCORIA_SIDERAL_V1.0.1_DIRECTOR.tap').read_bytes();blocks=split(tap);old=split(base)
 assert len(blocks)==28 and blocks[6:]==old[2:]
 for i in range(0,len(blocks),2):
  h,d=blocks[i:i+2];assert len(h)==19 and h[0]==0 and d[0]==255 and h[1]==(0 if i==0 else 3)

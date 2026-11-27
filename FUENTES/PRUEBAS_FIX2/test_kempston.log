@@ -1,0 +1,4 @@
+PASS: 2048 input combinations, upper bits ignored, impossible directions rejected, keyboard always enabled
+PASS: keyboard start -> joystick right/left/jump without FIRE -> keyboard after disconnected joystick
+PASS: ten direct title cheat/selector launches, keyboard and Kempston, all five phases
+PASS: 512 loader FIRE reads; disconnected port cannot block SPACE

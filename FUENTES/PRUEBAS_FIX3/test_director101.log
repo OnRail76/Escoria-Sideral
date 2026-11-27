@@ -1,0 +1,40 @@
+Phase 1 : 256 front-only spawns; speed/species/HP {2, 4} {0} {1, 2, 3} blocked entry PASS
+Phase 2 : 256 front-only spawns; speed/species/HP {2, 4} {0} {1, 2, 3} blocked entry PASS
+Phase 3 : 256 front-only spawns; speed/species/HP {2, 4, 5} {0, 1} {1, 2, 3, 4} blocked entry PASS
+Phase 4 : 256 front-only spawns; speed/species/HP {2, 4, 5} {0, 1} {1, 2, 3, 4} blocked entry PASS
+Phase 5 : 256 front-only spawns; speed/species/HP {2, 4, 5} {0, 1} {1, 2, 3, 4} blocked entry PASS
+Phase 1 hazard 0 ahead {'stop': 3, 'forward': 2, 'back': 3} PASS
+Phase 1 hazard 0 trail {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 1 hazard 0 center {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 1 corner safety PASS
+Phase 2 hazard 0 center {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 2 hazard 0 ahead {'stop': 3, 'forward': 2, 'back': 3} PASS
+Phase 2 hazard 0 trail {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 2 corner safety PASS
+Phase 3 hazard 0 trail {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 3 hazard 0 ahead {'stop': 3, 'forward': 2, 'back': 3} PASS
+Phase 3 hazard 2 ahead {'stop': 3, 'forward': 2, 'back': 3} PASS
+Phase 3 hazard 0 center {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 3 hazard 2 center {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 3 hazard 2 trail {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 3 corner safety PASS
+Phase 4 hazard 0 center {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 4 hazard 0 ahead {'stop': 3, 'forward': 2, 'back': 3} PASS
+Phase 4 hazard 0 trail {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 4 hazard 2 ahead {'stop': 3, 'forward': 2, 'back': 3} PASS
+Phase 4 hazard 2 center {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 4 hazard 2 trail {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 4 corner safety PASS
+Phase 5 hazard 0 ahead {'stop': 3, 'forward': 2, 'back': 3} PASS
+Phase 5 hazard 0 center {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 5 hazard 0 trail {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 5 hazard 2 ahead {'stop': 3, 'forward': 2, 'back': 3} PASS
+Phase 5 hazard 2 center {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 5 hazard 2 trail {'stop': 2, 'forward': 3, 'back': 3} PASS
+Phase 5 corner safety PASS
+PASS: front-only director and positional environmental hazards; no homing
+Phase 1 moving hazard publication and backdrop restoration PASS
+Phase 2 moving hazard publication and backdrop restoration PASS
+Phase 3 moving hazard publication and backdrop restoration PASS
+Phase 4 moving hazard publication and backdrop restoration PASS
+Phase 5 moving hazard publication and backdrop restoration PASS

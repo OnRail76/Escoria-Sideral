@@ -1,0 +1,7 @@
+PASS: 6144 mode/port/keyboard combinations, invalid full bytes rejected, keyboard mode ignores port
+PASS: inconsistent samples ignored, valid stable Kempston accepted, zero port reads in keyboard mode
+PASS: idle Ace stays still with synthetic ghost jump/fire; intentional Q works
+PASS: FIRE selects Kempston; right/left/jump and keyboard fallback
+PASS: physical SPACE has priority at title
+PASS: ten direct title cheat/selector launches, keyboard and Kempston, all five phases
+PASS: 512 loader FIRE reads; disconnected port cannot block SPACE

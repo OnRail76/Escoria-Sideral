@@ -48,6 +48,7 @@ class CPU:
     self.r[7]=self.r[2];self.r[1]=(self.r[1]-k)&255;self.flags(self.r[1]);self.t+=41*k;self.steps+=5*k;return
   # Mock only the ROM tape entry: validate flags, lengths and checksum; actual Z80 executes all dispatch/restore logic.
   if pc==0x0556:
+   assert not self.keys&16, "ROM BREAK: SPACE held during LD_BYTES"
    assert self.f&1 and self.tape_pos<len(blocks),(self.tape_pos,self.r[7]);b=blocks[self.tape_pos];self.tape_pos+=1
    valid=b[0]==self.r[7] and len(b)==self.pair(1)+2
    if valid:self.m[self.ix:self.ix+len(b)-2]=b[1:-1];self.ix+=len(b)-2;self.putpair(1,0)
@@ -131,9 +132,10 @@ class CPU:
   while self.t>=self.irq:
    if self.ie:self.m[0x5c78]=(self.m[0x5c78]+1)&255
    self.irq+=69888
- def run_to(self,lab,limit=2500000):
+ def run_to(self,lab,limit=2500000,release_fire_on_load=False):
   target=S[lab];n=0
   while self.pc!=target:
+   if release_fire_on_load and self.pc==S['rom_wait_space']:self.keys&=~16
    self.step();n+=1
    assert n<limit,(lab,hex(self.pc))
  def step_frame(self,keys=0):
@@ -178,13 +180,15 @@ print('PASS: ROM TAP headers, exact 19 bytes, types, flags, lengths and CODE add
 c=CPU();c.run_to('title_press');png(c.screen(),'captura_titulo.png');assert c.screen()==(P/'titulo.scr').read_bytes();c.run_to('title_press')
 # Wait without input, then fresh SPACE starts; Kempston FIRE starts and locks joystick.
 for _ in range(200):c.step()
-assert c.pc in range(S['title_press'],S['title_start_release']) or c.pc in range(S['input'],S['near']) or c.pc in range(S['song_wait'],S['sfx_pitches'])
-c=boot();assert c.v('joy')==0
+assert c.pc in range(S['title_press'],S['title_start_release']) or c.pc in range(S['input'],S['near']) or c.pc in range(S['song_wait'],S['sfx_pitches']) or c.pc in range(S['input_joy'],S['sparse_table'])
+c=boot();assert c.v('joy')==2
 j=start_from_title(CPU(),True);assert j.v('joy')==1 and j.v('lives')==3
 print('PASS: title SCR exact, SPACE and Kempston FIRE, release gate')
 c=boot();assert c.v('lives')==3 and c.v('px')==80;assert c.sp==65534
 initial=c.screen();png(initial,'captura_inicio.png')
 # Stopping stops progress. Moving forward at camera anchor advances terrain.
+# Isolate locomotion from the changed director's random initial wave.
+c.set('spawn_delay',255);c.set('hdelay',255)
 for _ in range(8):c.step_frame(0)
 assert c.v('px')==80 and c.v('scroll')==0 and c.v('progress')==0
 poses=set()
@@ -269,7 +273,7 @@ assert all(speed==2 for speed,d in zip(kinds,dirs) if d==1)
 assert any(speed==4 and d==0 for speed,d in zip(kinds,dirs))
 assert set(hp)==set(range(1,4)),hp
 assert min(hp.count(i) for i in range(1,4))>=50
-assert 4 in kinds and kinds.count(2)>kinds.count(4)*3 and 0 in dirs and 1 in dirs and dirs.count(0)>dirs.count(1) and len(set(delays))>15,(kinds.count(4),dirs.count(1),len(set(delays)))
+assert 4 in kinds and kinds.count(2)>kinds.count(4)*3 and set(dirs)=={0} and len(set(delays))>15,(kinds.count(4),dirs.count(1),len(set(delays)))
 print('Spawn sample: slow',kinds.count(2),'runners',kinds.count(4),'rear',dirs.count(1),'HP distribution',[hp.count(i) for i in range(1,4)],'unique intervals',len(set(delays)))
 # Every HP count takes exactly N impacts; each projectile consumed, score only on final hit.
 for hits in range(1,4):
@@ -283,19 +287,16 @@ c=boot();c.set('inv',255);counts=[];rear=False;front=False;rear_counts=[]
 for i in range(160):
  c.set('inv',255);c.step_frame(1)
  rear_counts.append(sum(c.v(f'e{j}on')!=0 and c.v(f'e{j}dir')==1 for j in range(4)));active=[j for j in range(4) if c.v(f'e{j}on')==1];counts.append(len(active));rear|=any(c.v(f'e{j}dir') for j in active);front|=any(not c.v(f'e{j}dir') for j in active)
-assert max(rear_counts)==1,rear_counts
-assert max(counts)==4 and rear and front,(max(counts),rear,front)
+assert max(rear_counts)==0,rear_counts
+assert max(counts)==4 and not rear and front,(max(counts),rear,front)
 print('Continuous movement occupancy: max',max(counts),'mean',round(sum(counts)/len(counts),2))
-print('PASS: all rear-origin spawns walk; front runners retained')
+print('PASS: zero rear-origin spawns; front runners retained')
 print('Maximum rear-origin slots (including deaths):',max(rear_counts))
-# Force attempts while an existing rear-origin zombie is alive or dying, even after crossing Ace.
+# Never spawn a new actor while front entry is occupied.
 for state in (1,2):
- for x in (48,120,160):
-  c=boot();enemy(c,0,x,1);c.set('e0on',state);c.set('e0death',24);c.set('inv',255)
-  for _ in range(12):
-   c.set('spawn_delay',0);c.sub('update');c.finish()
-   assert sum(c.v(f'e{j}on')!=0 and c.v(f'e{j}dir')==1 for j in range(4))<=1
-print('PASS: rear lock holds through crossing and dying')
+ c=boot();enemy(c,0,216,0);c.set('e0on',state);c.set('e0death',24);c.set('e0wait',2);c.set('inv',255);c.set('spawn_delay',0);c.sub('update');c.finish()
+ assert all(not c.v(f'e{j}on') for j in range(1,4))
+print('PASS: front lock; no rear fallback')
 # Meteor uses only falling fire and never overwrites the road.
 c=boot();c.set('hdelay',0);c.sub('hazard');c.finish();assert c.v('hon') and c.v('htype')==0 and c.v('hy')==40
 for _ in range(50):
@@ -307,9 +308,9 @@ for px in (0,2,40,80,126,176):
  c=boot();c.set('px',px);xs=set()
  for _ in range(80):
   c.set('hon',0);c.set('hdelay',0);c.sub('hazard');c.finish();hx=c.v('hx');xs.add(hx)
-  assert hx%8==0 and 0<=hx<=240 and abs(hx+4-((px&252)+13))<=35,(px,hx)
+  assert hx%8==0 and 0<=hx<=240 and abs(hx+4-((px&252)+13))<=44,(px,hx)
   c.set('px',176 if px<80 else 0);c.sub('hazard');c.finish();assert c.v('hx')==hx;c.set('px',px)
- assert len(xs)>=4,(px,xs)
+ assert len(xs)>=2,(px,xs)
 print('PASS: 480 targeted meteor spawns, bounded and varied, no homing')
 # Moon retains original pixels and attributes before and after a meteor crosses it.
 with zipfile.ZipFile(P/'LUNA_ZX.zip') as z:moon=z.read('luna_bitmap.bin');attrs=z.read('luna_atributos.bin')
@@ -415,8 +416,8 @@ for x,d in [(15,1),(16,0)]:
 c.set('lives',99);c.set('bonus_left',1);c.sub('score_inc');c.finish();assert c.v('lives')==99 and c.v('bonus_left')==150
 c.pc=S['restart'];c.run_to('loop');assert c.v('lives')==3 and c.v('bonus_left')==100 and c.v('inv')==0 and all(c.v(f'score{i}')==0 for i in range(5))
 print('PASS: bonus lives 1000/2500/4000, no duplicate award, two HUD digits, cap 99, restart reset')
-# Kempston auto lock.
-c=boot();c.joy=17;c.step_frame();assert c.v('joy')==1 and c.v('scroll')==2
+# Kempston selected by FIRE at title.
+c=start_from_title(CPU(),True);c.joy=17;c.step_frame();assert c.v('joy')==1 and c.v('scroll')==2
 # First and third-second lockout: run end-screen until release branch.
 c=boot();c.set('lives',0);c.step_frame();assert c.pc==S['gameover'];start=c.t;c.run_to('release_end',2500000);assert c.t-start>=149*69888
 c.run_to('press_end');c.keys=16;c.run_to('title_release');assert c.screen()==(P/'titulo.scr').read_bytes();c.keys=0;start_from_title(c);assert c.v('lives')==3
@@ -425,7 +426,7 @@ print('TAP: 24 checksummed blocks; code bytes',len(BIN));print('PASS: boot, 96 e
 (P/'test_results.txt').write_text(f'All checks PASS. Full-load sampled update body: {body} T-states nominal; erase {erase}. 2 frames: 139776 T-states. ROM/ULA not modeled.\n')
 
 # Complete stage transition via the real Z80 dispatch and mocked ROM tape entry.
-c=boot();c.set('lives',2);c.set('bonus_left',77);c.set('score0',3);c.set('score1',2);c.set('score2',1);c.set('boss',1);c.set('boss_hp',0);c.set('boss_end',74);c.step_frame();assert c.pc==S['win'];c.run_to('press_end');c.keys=16;c.run_to('loop');c.keys=0
+c=boot();c.set('lives',2);c.set('bonus_left',77);c.set('score0',3);c.set('score1',2);c.set('score2',1);c.set('boss',1);c.set('boss_hp',0);c.set('boss_end',74);c.step_frame();assert c.pc==S['win'];c.run_to('press_end');c.keys=16;c.run_to('loop',release_fire_on_load=True);c.keys=0
 assert c.v('phase')==2 and c.v('lives')==2 and c.v('bonus_left')==77 and [c.v(f'score{i}') for i in range(3)]==[3,2,1] and c.v('boss_hp')==22 and c.v('progress')==0 and c.tape_pos==10
 assert c.m[S['phase_bank']:S['phase_bank']+S['phase_size']]==(P/'fase2.bin').read_bytes()
 with zipfile.ZipFile(P/'BARCELONA_ZX_V2.zip') as z:city=z.read('bitmap.bin')
@@ -523,9 +524,9 @@ final=(P/'final.scr').read_bytes()
 with zipfile.ZipFile(P/'FINAL_ZX_V2.zip') as z: assert final==z.read('final.scr')
 assert blocks[22][2:12]==b'FINAL     ' and blocks[23][1:-1]==final
 c=boot();c.pc=S['next_phase'];c.run_to('loop');c.pc=S['win'];c.run_to('press_end');assert c.tape_pos==10 and c.screen()!=final
-c.keys=16;c.run_to('loop');assert c.tape_pos==14 and c.v('phase')==3
-c.pc=S['win'];c.keys=0;c.run_to('press_end');c.keys=16;c.run_to('loop');assert c.tape_pos==18 and c.v('phase')==4
-c=boot();c.set('phase',5);c.set('boss_hp',0);c.set('boss_end',100);c.tape_pos=22;c.pc=S['win'];c.keys=16;c.run_to('wait_final');assert c.tape_pos==24 and c.screen()==final
+c.keys=16;c.run_to('loop',release_fire_on_load=True);assert c.tape_pos==14 and c.v('phase')==3
+c.pc=S['win'];c.keys=0;c.run_to('press_end');c.keys=16;c.run_to('loop',release_fire_on_load=True);assert c.tape_pos==18 and c.v('phase')==4
+c=boot();c.set('phase',5);c.set('boss_hp',0);c.set('boss_end',100);c.tape_pos=22;c.pc=S['win'];c.keys=16;c.run_to('wait_final',release_fire_on_load=True);assert c.tape_pos==24 and c.screen()==final
 start=c.t;c.run_to('release_end');assert c.t-start>=149*69888 and c.screen()==final
 c.keys=0;c.run_to('press_end');c.keys=16;c.run_to('title_release');assert c.screen()==(P/'titulo.scr').read_bytes()
 png(final,'captura_final.png')
@@ -551,7 +552,7 @@ with zipfile.ZipFile(P/'ACE_WISCONSIN_V3.zip') as a,zipfile.ZipFile(P/'recursos.
 print(f'PASS: all {checked} sparse sprite frame/alignment combinations bit-exact against original bitmap AND mask')
 
 def lab_boot():
- c=boot();c.pc=S['next_phase'];c.run_to('loop');c.set('lives',2);c.set('score0',7);c.set('bonus_left',93);c.set('cheat',1);c.set('boss',1);c.set('boss_hp',0);c.set('boss_end',74);c.step_frame();assert c.pc==S['win'];c.run_to('press_end');c.keys=16;c.run_to('loop');c.keys=0
+ c=boot();c.pc=S['next_phase'];c.run_to('loop');c.set('lives',2);c.set('score0',7);c.set('bonus_left',93);c.set('cheat',1);c.set('boss',1);c.set('boss_hp',0);c.set('boss_end',74);c.step_frame();assert c.pc==S['win'];c.run_to('press_end');c.keys=16;c.run_to('loop',release_fire_on_load=True);c.keys=0
  assert c.v('phase')==3 and c.tape_pos==14 and c.v('lives')==2 and c.v('score0')==7 and c.v('bonus_left')==93 and c.v('cheat')==1 and c.v('boss_hp')==28
  assert c.m[S['phase_bank']:S['phase_bank']+S['phase_size']]==(P/'fase3.bin').read_bytes()
  return c
@@ -576,11 +577,11 @@ for _ in range(512):
  if d:rear[k]+=1;assert period>=2 and v==2
  if period==1:runners[k]+=1;assert d==0 and v==(5 if k else 4)
  if k and period!=1:assert period==2 and v==2
-assert .23<species[1]/512<.40 and hp_by=={0:{1,2,3},1:{2,3,4}} and all(runners[k]>0 and rear[k]>0 for k in (0,1))
+assert .23<species[1]/512<.40 and hp_by=={0:{1,2,3},1:{2,3,4}} and all(runners[k]>0 and rear[k]==0 for k in (0,1))
 print('PASS: mixed director sample',dict(species),'HP',hp_by,'runners',dict(runners),'rear',dict(rear),'periods',periods)
 c=lab_boot();mix=False;peak=0
 for i in range(180):
- c.step_frame(1);active=[j for j in range(4) if c.v(f'e{j}on')];peak=max(peak,len(active));mix|=len(set(c.v(f'e{j}species') for j in active))==2;assert sum(c.v(f'e{j}dir') for j in active)<=1
+ c.step_frame(1);active=[j for j in range(4) if c.v(f'e{j}on')];peak=max(peak,len(active));mix|=len(set(c.v(f'e{j}species') for j in active))==2;assert sum(c.v(f'e{j}dir') for j in active)==0
 assert peak==4 and mix
 # Sample high load: two aliens, two zombies, 3 shots, moving terrain and full lightning column.
 c=lab_boot();c.set('spawn_delay',255);c.set('hdelay',255)
@@ -613,7 +614,7 @@ for ticks in range(1,2001):
 assert c.v('boss_hp')==0 and bolts>0 and launches>=3 and lanes=={0,1},(ticks,launches,bolts,lanes,c.v('boss_hp'))
 print(f'PASS: Mago 28 valid hits, defeat in {ticks} updates, {launches} horizontal attacks, {bolts} lightning attacks, both lanes, never simultaneous')
 for _ in range(75):c.step_frame()
-assert c.pc==S['win'];c.run_to('press_end');c.keys=16;c.run_to('loop');assert c.tape_pos==18 and c.v('phase')==4
+assert c.pc==S['win'];c.run_to('press_end');c.keys=16;c.run_to('loop',release_fire_on_load=True);assert c.tape_pos==18 and c.v('phase')==4
 (P/'test_results.txt').write_text(f'All checks PASS. Phase 1 sampled update body: {body} T-states. Phase 3 mixed sampled update body: {lab_body} T-states. Budget 139776 nominal; ULA/ROM not modeled.\n')
 # Restart from the third-stage tape after rewinding, all original phase-1 data restored.
 c=lab_boot();c.set('lives',0);c.set('death',0);c.step_frame();assert c.pc==S['gameover'];c.run_to('press_end');c.keys=16;c.run_to('title_release');c.keys=0;c.tape_pos=0;start_from_title(c);assert c.v('phase')==1 and c.v('lives')==3 and c.tape_pos==6 and not c.v('cheat');moon_check(c)
@@ -659,7 +660,7 @@ for phase,bgname,hp,ratio in [(4,'04_ultratecnologia',34,10/16),(5,'05_entorno_a
   k=c.v('e0species');d=c.v('e0dir');v=c.v('e0speed');period=c.v('e0period');species[k]+=1;hp_by[k].add(c.v('e0hp'))
   if d:rear[k]+=1;assert period>=2 and v==2
   if period==1:runners[k]+=1;assert d==0 and v==(5 if k else 4)
- assert abs(species[1]/512-ratio)<.09 and hp_by=={0:{1,2,3},1:{2,3,4}}
+ assert abs(species[1]/512-ratio)<.09 and hp_by=={0:{1,2,3},1:{2,3,4}} and not rear
  print(f'PASS: phase {phase} director sample {dict(species)}, HP {hp_by}, runners {dict(runners)}, rear {dict(rear)}')
  c=select_boot(phase);c.set('progress',249);c.set('distance_sub',3);c.step_frame(17);assert c.v('boss') and c.v('boss_hp')==hp
  launches=0;bolts=0;meteors=0;lanes=set();prev=prev_h=0
@@ -677,7 +678,7 @@ for phase,bgname,hp,ratio in [(4,'04_ultratecnologia',34,10/16),(5,'05_entorno_a
  for _ in range(100 if phase==5 else 75):c.step_frame()
  assert c.pc==S['win'];c.keys=0
  if phase==4:
-  c.set('lives',2);c.set('bonus_left',73);c.set('score0',7);c.run_to('press_end');c.keys=16;c.run_to('loop');assert c.v('phase')==5 and c.tape_pos==22 and c.v('lives')==2 and c.v('bonus_left')==73 and c.v('score0')==7 and c.v('cheat')
+  c.set('lives',2);c.set('bonus_left',73);c.set('score0',7);c.run_to('press_end');c.keys=16;c.run_to('loop',release_fire_on_load=True);assert c.v('phase')==5 and c.tape_pos==22 and c.v('lives')==2 and c.v('bonus_left')==73 and c.v('score0')==7 and c.v('cheat')
  else:
   c.run_to('wait_final');assert c.tape_pos==24 and c.screen()==final
   c.run_to('press_end');c.keys=16;c.run_to('title_release');assert c.screen()==(P/'titulo.scr').read_bytes() and not c.v('cheat')

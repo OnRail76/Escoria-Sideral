@@ -1,0 +1,16 @@
+beep late frame: 8084 T, 7 FE writes PASS
+sfx_hit late frame: 8034 T, 10 FE writes PASS
+sfx_kill late frame: 7858 T, 5 FE writes PASS
+sfx_bossfire late frame: 7971 T, 6 FE writes PASS
+sfx_meteor late frame: 7752 T, 4 FE writes PASS
+sfx_lightning late frame: 8310 T, 9 FE writes PASS
+sfx_bonus late frame: 7827 T, 7 FE writes PASS
+sfx_death late frame: 7752 T, 4 FE writes PASS
+sfx_bossdead late frame: 7752 T, 4 FE writes PASS
+Priority: meteor > normal combat, death > meteor, no repeated reset, boss destruction can refresh PASS
+Phase 1 four actors + impact, meteor audible, frame body 118637 T PASS
+Phase 2 four actors + impact, meteor audible, frame body 118650 T PASS
+Phase 3 four actors + impact, meteor audible, frame body 120649 T PASS
+Phase 4 four actors + impact, meteor audible, frame body 120598 T PASS
+Phase 5 four actors + impact, meteor audible, frame body 120615 T PASS
+Sample peak body 120649 T; sync incl wait up to 28115 T; no ULA contention model
