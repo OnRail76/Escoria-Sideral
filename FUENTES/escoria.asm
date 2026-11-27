@@ -165,7 +165,7 @@ cheat_tone_wait:
     out ($fe),a
     ret
 title_start_release:
-    call song_wait
+    call select_control_wait
     call input
     ld a,(keys)
     bit 4,a
@@ -487,7 +487,7 @@ load_named:
     ld de,17
     xor a
     scf
-    call $0556
+    call rom_load_safe
     jp nc,load_named
     ld a,(header_buf)
     cp 3
@@ -514,7 +514,7 @@ load_payload:
     ld de,(load_len)
     ld a,255
     scf
-    call $0556
+    call rom_load_safe
     jp nc,load_named
     ld iy,$5c3a
     im 1
@@ -559,23 +559,12 @@ sync_done:
 input:
     xor a
     ld (keys),a
-    ld bc,31
-    in a,(c)
-    and 31
-    ld d,a
-    and 3
-    cp 3
-    jp z,keyboard
-    ld a,d
-    and 12
-    cp 12
-    jp z,keyboard
-    ld a,d
-    or a
-    jp z,keyboard
-    ld (keys),a
-    ld a,1
-    ld (joy),a
+    xor a
+    ld (joy_source),a
+    call keyboard
+    jp input_joy
+    db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+    db $00,$00
 keyboard:
     ld bc,57342
     in a,(c)
@@ -1020,125 +1009,34 @@ wave_size_roll:
     add a,2
     ld (wave_left),a
 wave_active:
-    xor a
-    ld (front_block),a
-    xor a
-    ld (rear_block),a
-    ld a,(px)
-    cp 40
-    jp nc,rear_player_safe
-    ld a,1
-    ld (rear_block),a
-rear_player_safe:
     ld a,(e0on)
     cp 0
     jp z,L_13
-    ld a,(e0dir)
-    cp 1
-    jp nz,L_15
-    ld a,1
-    ld (rear_block),a
-L_15:
-    ld a,(e0x)
-    cp 32
-    jp nc,L_14
-    ld a,1
-    ld (rear_block),a
-L_14:
     ld a,(e0x)
     cp 184
-    jp c,L_13
-    ld a,1
-    ld (front_block),a
+    jp nc,enemy_move
 L_13:
     ld a,(e1on)
     cp 0
-    jp z,L_16
-    ld a,(e1dir)
-    cp 1
-    jp nz,L_18
-    ld a,1
-    ld (rear_block),a
-L_18:
-    ld a,(e1x)
-    cp 32
-    jp nc,L_17
-    ld a,1
-    ld (rear_block),a
-L_17:
+    jp z,L_14
     ld a,(e1x)
     cp 184
-    jp c,L_16
-    ld a,1
-    ld (front_block),a
-L_16:
+    jp nc,enemy_move
+L_14:
     ld a,(e2on)
     cp 0
-    jp z,L_19
-    ld a,(e2dir)
-    cp 1
-    jp nz,L_21
-    ld a,1
-    ld (rear_block),a
-L_21:
-    ld a,(e2x)
-    cp 32
-    jp nc,L_20
-    ld a,1
-    ld (rear_block),a
-L_20:
+    jp z,L_15
     ld a,(e2x)
     cp 184
-    jp c,L_19
-    ld a,1
-    ld (front_block),a
-L_19:
+    jp nc,enemy_move
+L_15:
     ld a,(e3on)
     cp 0
-    jp z,L_22
-    ld a,(e3dir)
-    cp 1
-    jp nz,L_24
-    ld a,1
-    ld (rear_block),a
-L_24:
-    ld a,(e3x)
-    cp 32
-    jp nc,L_23
-    ld a,1
-    ld (rear_block),a
-L_23:
+    jp z,L_16
     ld a,(e3x)
     cp 184
-    jp c,L_22
-    ld a,1
-    ld (front_block),a
-L_22:
-    call random
-    and 7
-    cp 3
-    jp c,choose_rear
-choose_front:
-    ld a,(front_block)
-    cp 0
-    jp z,front_free
-    ld a,(rear_block)
-    cp 0
-    jp z,rear_free
-    jp enemy_move
-choose_rear:
-    ld a,(rear_block)
-    cp 0
-    jp z,rear_free
-    ld a,(front_block)
-    cp 0
-    jp z,front_free
-    jp enemy_move
-rear_free:
-    ld a,1
-    ld (spawn_dir),a
-    jp slot_search
-front_free:
+    jp nc,enemy_move
+L_16:
     xor a
     ld (spawn_dir),a
 slot_search:
@@ -1156,24 +1054,13 @@ slot_search:
     jp z,spawn3
     jp enemy_move
 spawn0:
-    ld a,(spawn_dir)
+    xor a
     ld (e0dir),a
-    or a
-    jp z,spawn0_front
-    ld a,0
-    ld (e0x),a
-    jp spawn0_speed
-spawn0_front:
     ld a,216
     ld (e0x),a
-spawn0_speed:
     call random
     and 7
-    jp nz,spawn0_slow
-    ld a,(spawn_dir)
-    cp 0
     jp z,spawn0_runner
-    xor a
 spawn0_slow:
     and 1
     add a,2
@@ -1234,24 +1121,13 @@ spawn0_hp:
     ld (e0hp),a
     jp wave_schedule
 spawn1:
-    ld a,(spawn_dir)
+    xor a
     ld (e1dir),a
-    or a
-    jp z,spawn1_front
-    ld a,0
-    ld (e1x),a
-    jp spawn1_speed
-spawn1_front:
     ld a,216
     ld (e1x),a
-spawn1_speed:
     call random
     and 7
-    jp nz,spawn1_slow
-    ld a,(spawn_dir)
-    cp 0
     jp z,spawn1_runner
-    xor a
 spawn1_slow:
     and 1
     add a,2
@@ -1312,24 +1188,13 @@ spawn1_hp:
     ld (e1hp),a
     jp wave_schedule
 spawn2:
-    ld a,(spawn_dir)
+    xor a
     ld (e2dir),a
-    or a
-    jp z,spawn2_front
-    ld a,0
-    ld (e2x),a
-    jp spawn2_speed
-spawn2_front:
     ld a,216
     ld (e2x),a
-spawn2_speed:
     call random
     and 7
-    jp nz,spawn2_slow
-    ld a,(spawn_dir)
-    cp 0
     jp z,spawn2_runner
-    xor a
 spawn2_slow:
     and 1
     add a,2
@@ -1390,24 +1255,13 @@ spawn2_hp:
     ld (e2hp),a
     jp wave_schedule
 spawn3:
-    ld a,(spawn_dir)
+    xor a
     ld (e3dir),a
-    or a
-    jp z,spawn3_front
-    ld a,0
-    ld (e3x),a
-    jp spawn3_speed
-spawn3_front:
     ld a,216
     ld (e3x),a
-spawn3_speed:
     call random
     and 7
-    jp nz,spawn3_slow
-    ld a,(spawn_dir)
-    cp 0
     jp z,spawn3_runner
-    xor a
 spawn3_slow:
     and 1
     add a,2
@@ -1483,10 +1337,135 @@ wave_rest:
     add a,18
     ld (spawn_delay),a
     jp enemy_move
+haz_spawn:
+    ld a,(death)
+    cp 0
+    jp nz,haz_defer
+    xor a
+    ld (front_block),a
+    ld a,(e0on)
+    cp 1
+    jp nz,L_17
+    ld a,(px)
+    ld b,a
+    ld a,(e0x)
+    ld c,48
+    call near
+    jp nc,L_17
+    ld a,1
+    ld (front_block),a
+L_17:
+    ld a,(e1on)
+    cp 1
+    jp nz,L_18
+    ld a,(px)
+    ld b,a
+    ld a,(e1x)
+    ld c,48
+    call near
+    jp nc,L_18
+    ld a,1
+    ld (front_block),a
+L_18:
+    ld a,(e2on)
+    cp 1
+    jp nz,L_19
+    ld a,(px)
+    ld b,a
+    ld a,(e2x)
+    ld c,48
+    call near
+    jp nc,L_19
+    ld a,1
+    ld (front_block),a
+L_19:
+    ld a,(e3on)
+    cp 1
+    jp nz,L_20
+    ld a,(px)
+    ld b,a
+    ld a,(e3x)
+    ld c,48
+    call near
+    jp nc,L_20
+    ld a,1
+    ld (front_block),a
+L_20:
+    ld a,(front_block)
+    cp 0
+    jp z,haz_choose
+    ld a,(px)
+    cp 24
+    jp c,haz_defer
+haz_choose:
+    xor a
+    ld (htype),a
+    ld a,(phase)
+    cp 3
+    jp c,haz_pattern
+    call random
+    and 1
+    jp z,haz_pattern
+    ld a,2
+    ld (htype),a
+haz_pattern:
+    ld a,(front_block)
+    cp 1
+    jp z,haz_ahead
+    call random
+    and 3
+    cp 2
+    jp nc,haz_ahead
+    or a
+    jp z,haz_center
+    ld a,(px)
+    and 252
+    add a,12
+    and 248
+    sub 8
+    jp nc,haz_place
+    xor a
+    jp haz_place
+haz_center:
+    ld a,(px)
+    and 252
+    add a,12
+    and 248
+    jp haz_place
+haz_ahead:
+    ld a,(px)
+    and 252
+    add a,12
+    and 248
+    ld b,a
+    ld a,(htype)
+    or a
+    ld a,40
+    jp z,haz_ahead_add
+    ld a,24
+haz_ahead_add:
+    add a,b
+haz_place:
+    ld (hx),a
+    ld a,1
+    ld (hon),a
+    xor a
+    ld (hscroll),a
+    ld a,(htype)
+    cp 2
+    jp z,lightning_start
+    ld a,40
+    ld (hy),a
+    ret
+haz_defer:
+    ld a,12
+    ld (hdelay),a
+    ret
+    db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 enemy_move:
     ld a,(e0on)
     cp 0
-    jp z,L_25
+    jp z,L_21
     ld a,(advance)
     cp 0
     jp z,e0_camera_done
@@ -1495,7 +1474,7 @@ enemy_move:
     jp z,e0_camera_done
     ld a,(e0x)
     sub 2
-    jp c,L_26
+    jp c,L_22
     ld (e0x),a
 e0_camera_done:
     ld a,(e0on)
@@ -1504,28 +1483,28 @@ e0_camera_done:
     ld a,(e0wait)
     dec a
     ld (e0wait),a
-    jp nz,L_27
+    jp nz,L_23
     ld a,(e0period)
     ld (e0wait),a
     ld a,(e0speed)
     ld b,a
     ld a,(e0dir)
     or a
-    jp z,L_28
+    jp z,L_24
     ld a,(e0x)
     cp 216
-    jp nc,L_26
+    jp nc,L_22
     add a,b
     cp 217
-    jp nc,L_26
+    jp nc,L_22
     ld (e0x),a
-    jp L_27
-L_28:
+    jp L_23
+L_24:
     ld a,(e0x)
     sub b
-    jp c,L_26
+    jp c,L_22
     ld (e0x),a
-L_27:
+L_23:
     ld a,(e0period)
     cp 1
     jp z,e0_animfast
@@ -1555,28 +1534,28 @@ e0_animdone:
     add a,16
     ld c,14
     call near
-    jp nc,L_25
+    jp nc,L_21
     ld a,(py)
     ld b,a
     ld a,(e0y)
     ld c,17
     call near
-    jp nc,L_25
+    jp nc,L_21
     call hurt
-    jp L_25
+    jp L_21
 e0_dying:
     ld a,(e0death)
     dec a
     ld (e0death),a
-    jp z,L_26
-    jp L_25
-L_26:
+    jp z,L_22
+    jp L_21
+L_22:
     xor a
     ld (e0on),a
-L_25:
+L_21:
     ld a,(e1on)
     cp 0
-    jp z,L_29
+    jp z,L_25
     ld a,(advance)
     cp 0
     jp z,e1_camera_done
@@ -1585,7 +1564,7 @@ L_25:
     jp z,e1_camera_done
     ld a,(e1x)
     sub 2
-    jp c,L_30
+    jp c,L_26
     ld (e1x),a
 e1_camera_done:
     ld a,(e1on)
@@ -1594,28 +1573,28 @@ e1_camera_done:
     ld a,(e1wait)
     dec a
     ld (e1wait),a
-    jp nz,L_31
+    jp nz,L_27
     ld a,(e1period)
     ld (e1wait),a
     ld a,(e1speed)
     ld b,a
     ld a,(e1dir)
     or a
-    jp z,L_32
+    jp z,L_28
     ld a,(e1x)
     cp 216
-    jp nc,L_30
+    jp nc,L_26
     add a,b
     cp 217
-    jp nc,L_30
+    jp nc,L_26
     ld (e1x),a
-    jp L_31
-L_32:
+    jp L_27
+L_28:
     ld a,(e1x)
     sub b
-    jp c,L_30
+    jp c,L_26
     ld (e1x),a
-L_31:
+L_27:
     ld a,(e1period)
     cp 1
     jp z,e1_animfast
@@ -1645,28 +1624,28 @@ e1_animdone:
     add a,16
     ld c,14
     call near
-    jp nc,L_29
+    jp nc,L_25
     ld a,(py)
     ld b,a
     ld a,(e1y)
     ld c,17
     call near
-    jp nc,L_29
+    jp nc,L_25
     call hurt
-    jp L_29
+    jp L_25
 e1_dying:
     ld a,(e1death)
     dec a
     ld (e1death),a
-    jp z,L_30
-    jp L_29
-L_30:
+    jp z,L_26
+    jp L_25
+L_26:
     xor a
     ld (e1on),a
-L_29:
+L_25:
     ld a,(e2on)
     cp 0
-    jp z,L_33
+    jp z,L_29
     ld a,(advance)
     cp 0
     jp z,e2_camera_done
@@ -1675,7 +1654,7 @@ L_29:
     jp z,e2_camera_done
     ld a,(e2x)
     sub 2
-    jp c,L_34
+    jp c,L_30
     ld (e2x),a
 e2_camera_done:
     ld a,(e2on)
@@ -1684,28 +1663,28 @@ e2_camera_done:
     ld a,(e2wait)
     dec a
     ld (e2wait),a
-    jp nz,L_35
+    jp nz,L_31
     ld a,(e2period)
     ld (e2wait),a
     ld a,(e2speed)
     ld b,a
     ld a,(e2dir)
     or a
-    jp z,L_36
+    jp z,L_32
     ld a,(e2x)
     cp 216
-    jp nc,L_34
+    jp nc,L_30
     add a,b
     cp 217
-    jp nc,L_34
+    jp nc,L_30
     ld (e2x),a
-    jp L_35
-L_36:
+    jp L_31
+L_32:
     ld a,(e2x)
     sub b
-    jp c,L_34
+    jp c,L_30
     ld (e2x),a
-L_35:
+L_31:
     ld a,(e2period)
     cp 1
     jp z,e2_animfast
@@ -1735,28 +1714,28 @@ e2_animdone:
     add a,16
     ld c,14
     call near
-    jp nc,L_33
+    jp nc,L_29
     ld a,(py)
     ld b,a
     ld a,(e2y)
     ld c,17
     call near
-    jp nc,L_33
+    jp nc,L_29
     call hurt
-    jp L_33
+    jp L_29
 e2_dying:
     ld a,(e2death)
     dec a
     ld (e2death),a
-    jp z,L_34
-    jp L_33
-L_34:
+    jp z,L_30
+    jp L_29
+L_30:
     xor a
     ld (e2on),a
-L_33:
+L_29:
     ld a,(e3on)
     cp 0
-    jp z,L_37
+    jp z,L_33
     ld a,(advance)
     cp 0
     jp z,e3_camera_done
@@ -1765,7 +1744,7 @@ L_33:
     jp z,e3_camera_done
     ld a,(e3x)
     sub 2
-    jp c,L_38
+    jp c,L_34
     ld (e3x),a
 e3_camera_done:
     ld a,(e3on)
@@ -1774,28 +1753,28 @@ e3_camera_done:
     ld a,(e3wait)
     dec a
     ld (e3wait),a
-    jp nz,L_39
+    jp nz,L_35
     ld a,(e3period)
     ld (e3wait),a
     ld a,(e3speed)
     ld b,a
     ld a,(e3dir)
     or a
-    jp z,L_40
+    jp z,L_36
     ld a,(e3x)
     cp 216
-    jp nc,L_38
+    jp nc,L_34
     add a,b
     cp 217
-    jp nc,L_38
+    jp nc,L_34
     ld (e3x),a
-    jp L_39
-L_40:
+    jp L_35
+L_36:
     ld a,(e3x)
     sub b
-    jp c,L_38
+    jp c,L_34
     ld (e3x),a
-L_39:
+L_35:
     ld a,(e3period)
     cp 1
     jp z,e3_animfast
@@ -1825,469 +1804,469 @@ e3_animdone:
     add a,16
     ld c,14
     call near
-    jp nc,L_37
+    jp nc,L_33
     ld a,(py)
     ld b,a
     ld a,(e3y)
     ld c,17
     call near
-    jp nc,L_37
+    jp nc,L_33
     call hurt
-    jp L_37
+    jp L_33
 e3_dying:
     ld a,(e3death)
     dec a
     ld (e3death),a
-    jp z,L_38
-    jp L_37
-L_38:
+    jp z,L_34
+    jp L_33
+L_34:
     xor a
     ld (e3on),a
-L_37:
+L_33:
     ld a,(b0on)
     cp 0
-    jp z,L_41
+    jp z,L_37
     ld a,(e0on)
     cp 1
-    jp nz,L_42
+    jp nz,L_38
     ld a,(e0x)
     add a,16
     ld b,a
     ld a,(b0x)
     ld c,17
     call near
-    jp nc,L_42
+    jp nc,L_38
     ld a,(e0y)
     add a,16
     ld b,a
     ld a,(b0y)
     ld c,15
     call near
-    jp nc,L_42
+    jp nc,L_38
     xor a
     ld (b0on),a
     ld a,(e0hp)
     or a
-    jp z,L_42_kill
+    jp z,L_38_kill
     dec a
     ld (e0hp),a
-    jp z,L_42_kill
+    jp z,L_38_kill
     call sfx_hit
-    jp L_41
-L_42_kill:
+    jp L_37
+L_38_kill:
     ld a,2
     ld (e0on),a
     ld a,24
     ld (e0death),a
     call sfx_kill
     call score_inc
-    jp L_41
-L_42:
+    jp L_37
+L_38:
     ld a,(e1on)
     cp 1
-    jp nz,L_43
+    jp nz,L_39
     ld a,(e1x)
     add a,16
     ld b,a
     ld a,(b0x)
     ld c,17
     call near
-    jp nc,L_43
+    jp nc,L_39
     ld a,(e1y)
     add a,16
     ld b,a
     ld a,(b0y)
     ld c,15
     call near
-    jp nc,L_43
+    jp nc,L_39
     xor a
     ld (b0on),a
     ld a,(e1hp)
     or a
-    jp z,L_43_kill
+    jp z,L_39_kill
     dec a
     ld (e1hp),a
-    jp z,L_43_kill
+    jp z,L_39_kill
     call sfx_hit
-    jp L_41
-L_43_kill:
+    jp L_37
+L_39_kill:
     ld a,2
     ld (e1on),a
     ld a,24
     ld (e1death),a
     call sfx_kill
     call score_inc
-    jp L_41
-L_43:
+    jp L_37
+L_39:
     ld a,(e2on)
     cp 1
-    jp nz,L_44
+    jp nz,L_40
     ld a,(e2x)
     add a,16
     ld b,a
     ld a,(b0x)
     ld c,17
     call near
-    jp nc,L_44
+    jp nc,L_40
     ld a,(e2y)
     add a,16
     ld b,a
     ld a,(b0y)
     ld c,15
     call near
-    jp nc,L_44
+    jp nc,L_40
     xor a
     ld (b0on),a
     ld a,(e2hp)
     or a
-    jp z,L_44_kill
+    jp z,L_40_kill
     dec a
     ld (e2hp),a
-    jp z,L_44_kill
+    jp z,L_40_kill
     call sfx_hit
-    jp L_41
-L_44_kill:
+    jp L_37
+L_40_kill:
     ld a,2
     ld (e2on),a
     ld a,24
     ld (e2death),a
     call sfx_kill
     call score_inc
-    jp L_41
-L_44:
+    jp L_37
+L_40:
     ld a,(e3on)
     cp 1
-    jp nz,L_45
+    jp nz,L_41
     ld a,(e3x)
     add a,16
     ld b,a
     ld a,(b0x)
     ld c,17
     call near
-    jp nc,L_45
+    jp nc,L_41
     ld a,(e3y)
     add a,16
     ld b,a
     ld a,(b0y)
     ld c,15
     call near
-    jp nc,L_45
+    jp nc,L_41
     xor a
     ld (b0on),a
     ld a,(e3hp)
     or a
-    jp z,L_45_kill
+    jp z,L_41_kill
     dec a
     ld (e3hp),a
-    jp z,L_45_kill
+    jp z,L_41_kill
     call sfx_hit
-    jp L_41
-L_45_kill:
+    jp L_37
+L_41_kill:
     ld a,2
     ld (e3on),a
     ld a,24
     ld (e3death),a
     call sfx_kill
     call score_inc
-    jp L_41
-L_45:
+    jp L_37
 L_41:
+L_37:
     ld a,(b1on)
     cp 0
-    jp z,L_46
+    jp z,L_42
     ld a,(e0on)
     cp 1
-    jp nz,L_47
+    jp nz,L_43
     ld a,(e0x)
     add a,16
     ld b,a
     ld a,(b1x)
     ld c,17
     call near
-    jp nc,L_47
+    jp nc,L_43
     ld a,(e0y)
     add a,16
     ld b,a
     ld a,(b1y)
     ld c,15
     call near
-    jp nc,L_47
+    jp nc,L_43
     xor a
     ld (b1on),a
     ld a,(e0hp)
     or a
-    jp z,L_47_kill
+    jp z,L_43_kill
     dec a
     ld (e0hp),a
-    jp z,L_47_kill
+    jp z,L_43_kill
     call sfx_hit
-    jp L_46
-L_47_kill:
+    jp L_42
+L_43_kill:
     ld a,2
     ld (e0on),a
     ld a,24
     ld (e0death),a
     call sfx_kill
     call score_inc
-    jp L_46
-L_47:
+    jp L_42
+L_43:
     ld a,(e1on)
     cp 1
-    jp nz,L_48
+    jp nz,L_44
     ld a,(e1x)
     add a,16
     ld b,a
     ld a,(b1x)
     ld c,17
     call near
-    jp nc,L_48
+    jp nc,L_44
     ld a,(e1y)
     add a,16
     ld b,a
     ld a,(b1y)
     ld c,15
     call near
-    jp nc,L_48
+    jp nc,L_44
     xor a
     ld (b1on),a
     ld a,(e1hp)
     or a
-    jp z,L_48_kill
+    jp z,L_44_kill
     dec a
     ld (e1hp),a
-    jp z,L_48_kill
+    jp z,L_44_kill
     call sfx_hit
-    jp L_46
-L_48_kill:
+    jp L_42
+L_44_kill:
     ld a,2
     ld (e1on),a
     ld a,24
     ld (e1death),a
     call sfx_kill
     call score_inc
-    jp L_46
-L_48:
+    jp L_42
+L_44:
     ld a,(e2on)
     cp 1
-    jp nz,L_49
+    jp nz,L_45
     ld a,(e2x)
     add a,16
     ld b,a
     ld a,(b1x)
     ld c,17
     call near
-    jp nc,L_49
+    jp nc,L_45
     ld a,(e2y)
     add a,16
     ld b,a
     ld a,(b1y)
     ld c,15
     call near
-    jp nc,L_49
+    jp nc,L_45
     xor a
     ld (b1on),a
     ld a,(e2hp)
     or a
-    jp z,L_49_kill
+    jp z,L_45_kill
     dec a
     ld (e2hp),a
-    jp z,L_49_kill
+    jp z,L_45_kill
     call sfx_hit
-    jp L_46
-L_49_kill:
+    jp L_42
+L_45_kill:
     ld a,2
     ld (e2on),a
     ld a,24
     ld (e2death),a
     call sfx_kill
     call score_inc
-    jp L_46
-L_49:
+    jp L_42
+L_45:
     ld a,(e3on)
     cp 1
-    jp nz,L_50
+    jp nz,L_46
     ld a,(e3x)
     add a,16
     ld b,a
     ld a,(b1x)
     ld c,17
     call near
-    jp nc,L_50
+    jp nc,L_46
     ld a,(e3y)
     add a,16
     ld b,a
     ld a,(b1y)
     ld c,15
     call near
-    jp nc,L_50
+    jp nc,L_46
     xor a
     ld (b1on),a
     ld a,(e3hp)
     or a
-    jp z,L_50_kill
+    jp z,L_46_kill
     dec a
     ld (e3hp),a
-    jp z,L_50_kill
+    jp z,L_46_kill
     call sfx_hit
-    jp L_46
-L_50_kill:
+    jp L_42
+L_46_kill:
     ld a,2
     ld (e3on),a
     ld a,24
     ld (e3death),a
     call sfx_kill
     call score_inc
-    jp L_46
-L_50:
+    jp L_42
 L_46:
+L_42:
     ld a,(b2on)
     cp 0
-    jp z,L_51
+    jp z,L_47
     ld a,(e0on)
     cp 1
-    jp nz,L_52
+    jp nz,L_48
     ld a,(e0x)
     add a,16
     ld b,a
     ld a,(b2x)
     ld c,17
     call near
-    jp nc,L_52
+    jp nc,L_48
     ld a,(e0y)
     add a,16
     ld b,a
     ld a,(b2y)
     ld c,15
     call near
-    jp nc,L_52
+    jp nc,L_48
     xor a
     ld (b2on),a
     ld a,(e0hp)
     or a
-    jp z,L_52_kill
+    jp z,L_48_kill
     dec a
     ld (e0hp),a
-    jp z,L_52_kill
+    jp z,L_48_kill
     call sfx_hit
-    jp L_51
-L_52_kill:
+    jp L_47
+L_48_kill:
     ld a,2
     ld (e0on),a
     ld a,24
     ld (e0death),a
     call sfx_kill
     call score_inc
-    jp L_51
-L_52:
+    jp L_47
+L_48:
     ld a,(e1on)
     cp 1
-    jp nz,L_53
+    jp nz,L_49
     ld a,(e1x)
     add a,16
     ld b,a
     ld a,(b2x)
     ld c,17
     call near
-    jp nc,L_53
+    jp nc,L_49
     ld a,(e1y)
     add a,16
     ld b,a
     ld a,(b2y)
     ld c,15
     call near
-    jp nc,L_53
+    jp nc,L_49
     xor a
     ld (b2on),a
     ld a,(e1hp)
     or a
-    jp z,L_53_kill
+    jp z,L_49_kill
     dec a
     ld (e1hp),a
-    jp z,L_53_kill
+    jp z,L_49_kill
     call sfx_hit
-    jp L_51
-L_53_kill:
+    jp L_47
+L_49_kill:
     ld a,2
     ld (e1on),a
     ld a,24
     ld (e1death),a
     call sfx_kill
     call score_inc
-    jp L_51
-L_53:
+    jp L_47
+L_49:
     ld a,(e2on)
     cp 1
-    jp nz,L_54
+    jp nz,L_50
     ld a,(e2x)
     add a,16
     ld b,a
     ld a,(b2x)
     ld c,17
     call near
-    jp nc,L_54
+    jp nc,L_50
     ld a,(e2y)
     add a,16
     ld b,a
     ld a,(b2y)
     ld c,15
     call near
-    jp nc,L_54
+    jp nc,L_50
     xor a
     ld (b2on),a
     ld a,(e2hp)
     or a
-    jp z,L_54_kill
+    jp z,L_50_kill
     dec a
     ld (e2hp),a
-    jp z,L_54_kill
+    jp z,L_50_kill
     call sfx_hit
-    jp L_51
-L_54_kill:
+    jp L_47
+L_50_kill:
     ld a,2
     ld (e2on),a
     ld a,24
     ld (e2death),a
     call sfx_kill
     call score_inc
-    jp L_51
-L_54:
+    jp L_47
+L_50:
     ld a,(e3on)
     cp 1
-    jp nz,L_55
+    jp nz,L_51
     ld a,(e3x)
     add a,16
     ld b,a
     ld a,(b2x)
     ld c,17
     call near
-    jp nc,L_55
+    jp nc,L_51
     ld a,(e3y)
     add a,16
     ld b,a
     ld a,(b2y)
     ld c,15
     call near
-    jp nc,L_55
+    jp nc,L_51
     xor a
     ld (b2on),a
     ld a,(e3hp)
     or a
-    jp z,L_55_kill
+    jp z,L_51_kill
     dec a
     ld (e3hp),a
-    jp z,L_55_kill
+    jp z,L_51_kill
     call sfx_hit
-    jp L_51
-L_55_kill:
+    jp L_47
+L_51_kill:
     ld a,2
     ld (e3on),a
     ld a,24
     ld (e3death),a
     call sfx_kill
     call score_inc
-    jp L_51
-L_55:
+    jp L_47
 L_51:
+L_47:
     jp hazard
 begin_boss:
     ld a,1
@@ -2326,33 +2305,33 @@ boss_logic:
 boss_pos_ok:
     ld a,(b0on)
     cp 0
-    jp z,L_56
+    jp z,L_52
     ld hl,eye_by_phase
     call phase_value
     ld b,a
     ld a,(b0x)
     cp b
-    jp c,L_56
+    jp c,L_52
     xor a
     ld (b0on),a
     ld b,127
     ld a,(b0y)
     ld c,5
     call near
-    jp nc,L_56
+    jp nc,L_52
     ld a,(frame)
     and 31
     cp 6
-    jp c,L_56
+    jp c,L_52
     ld a,(boss_ready)
     cp 0
-    jp z,L_56
+    jp z,L_52
     ld a,(boss_hit)
     cp 0
-    jp nz,L_56
+    jp nz,L_52
     ld a,(boss_hp)
     cp 0
-    jp z,L_56
+    jp z,L_52
     ld a,(boss_hp)
     add a,-1
     ld (boss_hp),a
@@ -2360,43 +2339,43 @@ boss_pos_ok:
     ld (boss_hit),a
     ld a,(boss_hp)
     cp 0
-    jp z,L_56_boss_dead
+    jp z,L_52_boss_dead
     call sfx_hit
-    jp L_56_boss_score
-L_56_boss_dead:
+    jp L_52_boss_score
+L_52_boss_dead:
     call sfx_bossdead
-L_56_boss_score:
+L_52_boss_score:
     call score_inc
-L_56:
+L_52:
     ld a,(b1on)
     cp 0
-    jp z,L_57
+    jp z,L_53
     ld hl,eye_by_phase
     call phase_value
     ld b,a
     ld a,(b1x)
     cp b
-    jp c,L_57
+    jp c,L_53
     xor a
     ld (b1on),a
     ld b,127
     ld a,(b1y)
     ld c,5
     call near
-    jp nc,L_57
+    jp nc,L_53
     ld a,(frame)
     and 31
     cp 6
-    jp c,L_57
+    jp c,L_53
     ld a,(boss_ready)
     cp 0
-    jp z,L_57
+    jp z,L_53
     ld a,(boss_hit)
     cp 0
-    jp nz,L_57
+    jp nz,L_53
     ld a,(boss_hp)
     cp 0
-    jp z,L_57
+    jp z,L_53
     ld a,(boss_hp)
     add a,-1
     ld (boss_hp),a
@@ -2404,43 +2383,43 @@ L_56:
     ld (boss_hit),a
     ld a,(boss_hp)
     cp 0
-    jp z,L_57_boss_dead
+    jp z,L_53_boss_dead
     call sfx_hit
-    jp L_57_boss_score
-L_57_boss_dead:
+    jp L_53_boss_score
+L_53_boss_dead:
     call sfx_bossdead
-L_57_boss_score:
+L_53_boss_score:
     call score_inc
-L_57:
+L_53:
     ld a,(b2on)
     cp 0
-    jp z,L_58
+    jp z,L_54
     ld hl,eye_by_phase
     call phase_value
     ld b,a
     ld a,(b2x)
     cp b
-    jp c,L_58
+    jp c,L_54
     xor a
     ld (b2on),a
     ld b,127
     ld a,(b2y)
     ld c,5
     call near
-    jp nc,L_58
+    jp nc,L_54
     ld a,(frame)
     and 31
     cp 6
-    jp c,L_58
+    jp c,L_54
     ld a,(boss_ready)
     cp 0
-    jp z,L_58
+    jp z,L_54
     ld a,(boss_hit)
     cp 0
-    jp nz,L_58
+    jp nz,L_54
     ld a,(boss_hp)
     cp 0
-    jp z,L_58
+    jp z,L_54
     ld a,(boss_hp)
     add a,-1
     ld (boss_hp),a
@@ -2448,14 +2427,14 @@ L_57:
     ld (boss_hit),a
     ld a,(boss_hp)
     cp 0
-    jp z,L_58_boss_dead
+    jp z,L_54_boss_dead
     call sfx_hit
-    jp L_58_boss_score
-L_58_boss_dead:
+    jp L_54_boss_score
+L_54_boss_dead:
     call sfx_bossdead
-L_58_boss_score:
+L_54_boss_score:
     call score_inc
-L_58:
+L_54:
     ld a,(phase)
     cp 3
     jp nc,mago_hazard
@@ -2498,43 +2477,25 @@ hazard:
     dec a
     ld (hdelay),a
     ret
-haz_spawn:
-    ld a,1
-    ld (hon),a
-    call random
-    and 7
-    add a,a
-    add a,a
-    add a,a
-    ld b,a
-    ld a,(px)
-    and 252
-    add a,12
-    and 248
-    add a,b
-    sub 24
-    jp nc,haz_x_ok
-    xor a
-haz_x_ok:
-    cp 241
-    jp c,haz_x_clamped
-    ld a,240
-haz_x_clamped:
-    ld (hx),a
-    ld a,40
-    ld (hy),a
-    xor a
-    ld (htype),a
-    ld a,(phase)
-    cp 3
-    jp nc,haz_choose_lightning
-    ret
-haz_choose_lightning:
-    call random
-    and 1
-    ret z
-    jp lightning_start
 haz_active:
+    ld a,(boss)
+    cp 1
+    jp z,haz_motion_done
+    ld a,(advance)
+    cp 0
+    jp z,haz_motion_done
+    ld a,(hscroll)
+    add a,1
+    ld (hscroll),a
+    cp 4
+    jp c,haz_motion_done
+    xor a
+    ld (hscroll),a
+    ld a,(hx)
+    sub 8
+    jp c,haz_off
+    ld (hx),a
+haz_motion_done:
     ld a,(htype)
     cp 2
     jp z,lightning_warning
@@ -2584,6 +2545,18 @@ haz_impact:
     ld a,128
     ld (hy),a
     jp sfx_meteor
+rom_load_safe:
+    push af
+    push bc
+    ld bc,32766
+rom_wait_space:
+    in a,(c)
+    bit 0,a
+    jp z,rom_wait_space
+    pop bc
+    pop af
+    jp $0556
+    db $00,$00,$00,$00,$00,$00
 haz_off:
     xor a
     ld (hon),a
@@ -4014,12 +3987,58 @@ fast_done:
     pop de
     pop hl
     ret
+input_joy:
+    ld a,(joy)
+    cp 2
+    jp z,input_done
+    ld bc,31
+    in a,(c)
+    cp 32
+    ret nc
+    ld d,a
+    in a,(c)
+    cp d
+    ret nz
+    in a,(c)
+    cp d
+    ret nz
+    ld a,d
+    and 3
+    cp 3
+    ret z
+    ld a,d
+    and 12
+    cp 12
+    ret z
+    ld a,(keys)
+    bit 4,a
+    jp nz,input_merge
+    bit 4,d
+    jp z,input_merge
+    ld a,1
+    ld (joy_source),a
+input_merge:
+    ld a,(keys)
+    or d
+    ld (keys),a
+input_done:
+    ret
+select_control_wait:
+    ld a,(joy)
+    or a
+    jp nz,song_wait
+    ld a,(joy_source)
+    or a
+    ld a,2
+    jp z,control_selected
+    ld a,1
+control_selected:
+    ld (joy),a
+    jp song_wait
+joy_source:
+    db $00
     db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-    db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-    db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-    db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-    db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-    db $00,$00,$00
+    db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 sparse_table:
     jp sparse_next
     jp sparse_span1
@@ -4765,70 +4784,70 @@ erase_direct:
     call erase_5_32
     ld a,(e0on)
     cp 0
-    jp z,L_59
+    jp z,L_55
     ld a,(e0y)
     ld c,a
     ld a,(e0x)
     call screen_addr
     call erase_5_32
-L_59:
+L_55:
     ld a,(e1on)
     cp 0
-    jp z,L_60
+    jp z,L_56
     ld a,(e1y)
     ld c,a
     ld a,(e1x)
     call screen_addr
     call erase_5_32
-L_60:
+L_56:
     ld a,(e2on)
     cp 0
-    jp z,L_61
+    jp z,L_57
     ld a,(e2y)
     ld c,a
     ld a,(e2x)
     call screen_addr
     call erase_5_32
-L_61:
+L_57:
     ld a,(e3on)
     cp 0
-    jp z,L_62
+    jp z,L_58
     ld a,(e3y)
     ld c,a
     ld a,(e3x)
     call screen_addr
     call erase_5_32
-L_62:
+L_58:
     ld a,(b0on)
     cp 0
-    jp z,L_63
+    jp z,L_59
     ld a,(b0y)
     ld c,a
     ld a,(b0x)
     call screen_addr
     call erase_1_4
-L_63:
+L_59:
     ld a,(b1on)
     cp 0
-    jp z,L_64
+    jp z,L_60
     ld a,(b1y)
     ld c,a
     ld a,(b1x)
     call screen_addr
     call erase_1_4
-L_64:
+L_60:
     ld a,(b2on)
     cp 0
-    jp z,L_65
+    jp z,L_61
     ld a,(b2y)
     ld c,a
     ld a,(b2x)
     call screen_addr
     call erase_1_4
-L_65:
+L_61:
     ld a,(hon)
     cp 0
-    jp z,L_66
+    jp z,L_62
     ld a,(htype)
     cp 2
     jp nc,erase_lightning_call
@@ -4866,16 +4885,16 @@ erase_city:
 erase_lightning_call:
     call erase_lightning
 erase_haz_done:
-L_66:
+L_62:
     ld a,(bon)
     cp 0
-    jp z,L_67
+    jp z,L_63
     ld a,(by)
     ld c,a
     ld a,(bx)
     call screen_addr
     call erase_2_8
-L_67:
+L_63:
     ret
 draw_all:
     ld a,(boss)
@@ -5069,23 +5088,23 @@ boss_patch:
 draw_enemies:
     ld a,(e0on)
     cp 0
-    jp z,L_68
+    jp z,L_64
     ld a,(e0on)
     cp 2
-    jp z,L_73
+    jp z,L_69
     ld a,(e0anim)
     rrca
     rrca
     and 7
-    jp L_70
-L_73:
+    jp L_66
+L_69:
     ld a,(e0death)
     ld e,a
     ld d,0
     ld hl,zdeath_pose
     add hl,de
     ld a,(hl)
-L_70:
+L_66:
     ld b,a
     ld a,(e0species)
     cp 1
@@ -5093,7 +5112,7 @@ L_70:
     ld a,(e0dir)
     or a
     ld a,b
-    jp nz,L_71
+    jp nz,L_67
     add a,a
     ld e,a
     ld d,0
@@ -5102,8 +5121,8 @@ L_70:
     ld e,(hl)
     inc hl
     ld d,(hl)
-    jp L_72
-L_71:
+    jp L_68
+L_67:
     add a,a
     ld e,a
     ld d,0
@@ -5112,7 +5131,7 @@ L_71:
     ld e,(hl)
     inc hl
     ld d,(hl)
-    jp L_72
+    jp L_68
 e0_alien_draw:
     ld a,(e0dir)
     or a
@@ -5126,7 +5145,7 @@ e0_alien_draw:
     ld e,(hl)
     inc hl
     ld d,(hl)
-    jp L_72
+    jp L_68
 e0_alien_right:
     add a,a
     ld e,a
@@ -5136,7 +5155,7 @@ e0_alien_right:
     ld e,(hl)
     inc hl
     ld d,(hl)
-L_72:
+L_68:
     ld a,(e0on)
     cp 2
     jp z,e0_drawdead
@@ -5144,33 +5163,33 @@ L_72:
     ld c,a
     ld a,(e0x)
     call actor_draw
-    jp L_68
+    jp L_64
 e0_drawdead:
     ld a,(e0y)
     ld c,a
     ld a,(e0x)
     and 248
     call actor_draw
-L_68:
+L_64:
     ld a,(e1on)
     cp 0
-    jp z,L_74
+    jp z,L_70
     ld a,(e1on)
     cp 2
-    jp z,L_79
+    jp z,L_75
     ld a,(e1anim)
     rrca
     rrca
     and 7
-    jp L_76
-L_79:
+    jp L_72
+L_75:
     ld a,(e1death)
     ld e,a
     ld d,0
     ld hl,zdeath_pose
     add hl,de
     ld a,(hl)
-L_76:
+L_72:
     ld b,a
     ld a,(e1species)
     cp 1
@@ -5178,7 +5197,7 @@ L_76:
     ld a,(e1dir)
     or a
     ld a,b
-    jp nz,L_77
+    jp nz,L_73
     add a,a
     ld e,a
     ld d,0
@@ -5187,8 +5206,8 @@ L_76:
     ld e,(hl)
     inc hl
     ld d,(hl)
-    jp L_78
-L_77:
+    jp L_74
+L_73:
     add a,a
     ld e,a
     ld d,0
@@ -5197,7 +5216,7 @@ L_77:
     ld e,(hl)
     inc hl
     ld d,(hl)
-    jp L_78
+    jp L_74
 e1_alien_draw:
     ld a,(e1dir)
     or a
@@ -5211,7 +5230,7 @@ e1_alien_draw:
     ld e,(hl)
     inc hl
     ld d,(hl)
-    jp L_78
+    jp L_74
 e1_alien_right:
     add a,a
     ld e,a
@@ -5221,7 +5240,7 @@ e1_alien_right:
     ld e,(hl)
     inc hl
     ld d,(hl)
-L_78:
+L_74:
     ld a,(e1on)
     cp 2
     jp z,e1_drawdead
@@ -5229,33 +5248,33 @@ L_78:
     ld c,a
     ld a,(e1x)
     call actor_draw
-    jp L_74
+    jp L_70
 e1_drawdead:
     ld a,(e1y)
     ld c,a
     ld a,(e1x)
     and 248
     call actor_draw
-L_74:
+L_70:
     ld a,(e2on)
     cp 0
-    jp z,L_80
+    jp z,L_76
     ld a,(e2on)
     cp 2
-    jp z,L_85
+    jp z,L_81
     ld a,(e2anim)
     rrca
     rrca
     and 7
-    jp L_82
-L_85:
+    jp L_78
+L_81:
     ld a,(e2death)
     ld e,a
     ld d,0
     ld hl,zdeath_pose
     add hl,de
     ld a,(hl)
-L_82:
+L_78:
     ld b,a
     ld a,(e2species)
     cp 1
@@ -5263,7 +5282,7 @@ L_82:
     ld a,(e2dir)
     or a
     ld a,b
-    jp nz,L_83
+    jp nz,L_79
     add a,a
     ld e,a
     ld d,0
@@ -5272,8 +5291,8 @@ L_82:
     ld e,(hl)
     inc hl
     ld d,(hl)
-    jp L_84
-L_83:
+    jp L_80
+L_79:
     add a,a
     ld e,a
     ld d,0
@@ -5282,7 +5301,7 @@ L_83:
     ld e,(hl)
     inc hl
     ld d,(hl)
-    jp L_84
+    jp L_80
 e2_alien_draw:
     ld a,(e2dir)
     or a
@@ -5296,7 +5315,7 @@ e2_alien_draw:
     ld e,(hl)
     inc hl
     ld d,(hl)
-    jp L_84
+    jp L_80
 e2_alien_right:
     add a,a
     ld e,a
@@ -5306,7 +5325,7 @@ e2_alien_right:
     ld e,(hl)
     inc hl
     ld d,(hl)
-L_84:
+L_80:
     ld a,(e2on)
     cp 2
     jp z,e2_drawdead
@@ -5314,33 +5333,33 @@ L_84:
     ld c,a
     ld a,(e2x)
     call actor_draw
-    jp L_80
+    jp L_76
 e2_drawdead:
     ld a,(e2y)
     ld c,a
     ld a,(e2x)
     and 248
     call actor_draw
-L_80:
+L_76:
     ld a,(e3on)
     cp 0
-    jp z,L_86
+    jp z,L_82
     ld a,(e3on)
     cp 2
-    jp z,L_91
+    jp z,L_87
     ld a,(e3anim)
     rrca
     rrca
     and 7
-    jp L_88
-L_91:
+    jp L_84
+L_87:
     ld a,(e3death)
     ld e,a
     ld d,0
     ld hl,zdeath_pose
     add hl,de
     ld a,(hl)
-L_88:
+L_84:
     ld b,a
     ld a,(e3species)
     cp 1
@@ -5348,7 +5367,7 @@ L_88:
     ld a,(e3dir)
     or a
     ld a,b
-    jp nz,L_89
+    jp nz,L_85
     add a,a
     ld e,a
     ld d,0
@@ -5357,8 +5376,8 @@ L_88:
     ld e,(hl)
     inc hl
     ld d,(hl)
-    jp L_90
-L_89:
+    jp L_86
+L_85:
     add a,a
     ld e,a
     ld d,0
@@ -5367,7 +5386,7 @@ L_89:
     ld e,(hl)
     inc hl
     ld d,(hl)
-    jp L_90
+    jp L_86
 e3_alien_draw:
     ld a,(e3dir)
     or a
@@ -5381,7 +5400,7 @@ e3_alien_draw:
     ld e,(hl)
     inc hl
     ld d,(hl)
-    jp L_90
+    jp L_86
 e3_alien_right:
     add a,a
     ld e,a
@@ -5391,7 +5410,7 @@ e3_alien_right:
     ld e,(hl)
     inc hl
     ld d,(hl)
-L_90:
+L_86:
     ld a,(e3on)
     cp 2
     jp z,e3_drawdead
@@ -5399,14 +5418,14 @@ L_90:
     ld c,a
     ld a,(e3x)
     call actor_draw
-    jp L_86
+    jp L_82
 e3_drawdead:
     ld a,(e3y)
     ld c,a
     ld a,(e3x)
     and 248
     call actor_draw
-L_86:
+L_82:
 draw_player:
     ld a,(death)
     or a
@@ -5441,7 +5460,7 @@ draw_alive:
 draw_shots:
     ld a,(b0on)
     cp 0
-    jp z,L_92
+    jp z,L_88
     ld a,(b0y)
     ld c,a
     ld a,(b0x)
@@ -5453,10 +5472,10 @@ draw_shots:
     ld de,bullet_shift
 bullet0_ready:
     call draw_1_4
-L_92:
+L_88:
     ld a,(b1on)
     cp 0
-    jp z,L_93
+    jp z,L_89
     ld a,(b1y)
     ld c,a
     ld a,(b1x)
@@ -5468,10 +5487,10 @@ L_92:
     ld de,bullet_shift
 bullet1_ready:
     call draw_1_4
-L_93:
+L_89:
     ld a,(b2on)
     cp 0
-    jp z,L_94
+    jp z,L_90
     ld a,(b2y)
     ld c,a
     ld a,(b2x)
@@ -5483,10 +5502,10 @@ L_93:
     ld de,bullet_shift
 bullet2_ready:
     call draw_1_4
-L_94:
+L_90:
     ld a,(hon)
     cp 0
-    jp z,L_95
+    jp z,L_91
     ld a,(htype)
     cp 2
     jp nc,draw_lightning_call
@@ -5538,10 +5557,10 @@ draw_meteor:
 draw_lightning_call:
     call draw_lightning
 draw_haz_done:
-L_95:
+L_91:
     ld a,(bon)
     cp 0
-    jp z,L_96
+    jp z,L_92
     ld a,(by)
     ld c,a
     ld a,(bx)
@@ -5564,7 +5583,7 @@ L_95:
     ld d,(hl)
     pop hl
     call draw_2_8
-L_96:
+L_92:
     ret
 ground:
     ld a,(boss)
@@ -5941,7 +5960,7 @@ wave_left:
     db $00
 front_block:
     db $00
-rear_block:
+hscroll:
     db $00
 spawn_dir:
     db $00

@@ -1,14 +1,10 @@
-"""Reconstruye la cinta Gold Master V1.0 con el generador original aprobado."""
+"""Rebuild the V1.0.1 approved director release and verify exact TAP."""
 from pathlib import Path
-import subprocess, sys, hashlib
-root = Path(__file__).resolve().parent
-subprocess.run([sys.executable, str(root / 'build.py')], cwd=root, check=True)
-raw = (root / 'ESCORIA_SIDERAL_ALFA_21_2.tap').read_bytes()
-expected = '250c3210909e3479801fbec8212b2745d588a9035ae2c6b7c4d87c847a8990f2'
-actual = hashlib.sha256(raw).hexdigest()
-if actual != expected:
-    raise SystemExit(f'ERROR: SHA-256 no coincide: {actual}')
-out = root.parent / 'JUEGO' / 'ESCORIA_SIDERAL_V1.0.tap'
-out.parent.mkdir(exist_ok=True)
-out.write_bytes(raw)
-print(f'Gold Master verificado: {out} | {len(raw)} bytes | SHA-256 {actual}')
+import subprocess,sys,hashlib
+root=Path(__file__).resolve().parent
+subprocess.run([sys.executable,str(root/'build.py')],cwd=root,check=True)
+raw=(root/'ESCORIA_SIDERAL_V1.0.1_DIRECTOR.tap').read_bytes()
+assert hashlib.sha256(raw).hexdigest()=='df2d7b596060ee42a675de0b748e14e2aa2ce9d8be9a2308e7f538df1240766e'
+(root.parent/'JUEGO').mkdir(exist_ok=True)
+(root.parent/'JUEGO'/'ESCORIA_SIDERAL_V1.0.1.tap').write_bytes(raw)
+print('Release TAP verified:',len(raw),'bytes')

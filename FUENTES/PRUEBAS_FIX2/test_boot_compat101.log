@@ -1,0 +1,2 @@
+PASS: all BASIC, loading gate, screen, CODE headers, overlays and final blocks identical to V1.0; only 1133 resident director / ROM guard bytes changed
+PASS: identical instruction trace, registers, timing, title, first-phase screen and audio through 32183 steps (ROM/IRQ simulated)

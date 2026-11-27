@@ -1,0 +1,7 @@
+PASS: phase 2 held SPACE blocked, release loads bank + SCR, lives/score/stack intact
+PASS: phase 3 held SPACE blocked, release loads bank + SCR, lives/score/stack intact
+PASS: phase 4 held SPACE blocked, release loads bank + SCR, lives/score/stack intact
+PASS: phase 5 held SPACE blocked, release loads bank + SCR, lives/score/stack intact
+PASS: final SCR with SPACE held
+PASS: header call register/flag/stack preservation and payload release guard
+PASS: Kempston FIRE transition

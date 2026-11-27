@@ -83,7 +83,7 @@ lab('title_cheat_release');call('song_wait');call('input');la('keys');bit(4);jp(
 lab('title_select');la('keys');alu('and',3);jp('selector_idle','z');ld('b','a');branch_var('select_hold',1,'title_press');setv('select_hold',1);ld('a','b');bit(0);jp('selector_right','nz');branch_var('selected_phase',1,'selector_wrap_left');tick('selected_phase',-1);jp('selector_changed');lab('selector_wrap_left');setv('selected_phase',5);jp('selector_changed');lab('selector_right');branch_var('selected_phase',5,'selector_wrap_right');tick('selected_phase',1);jp('selector_changed');lab('selector_wrap_right');setv('selected_phase',1);lab('selector_changed');call('selector_draw');jp('title_press');lab('selector_idle');zero('select_hold');jp('title_press')
 lab('selector_draw');ld('de','msg_select');ld('hl',addr(120,10));ld('b',8);call('msg_row');ld('hl',0x5800+15*32+10);ld('b',12);lab('selector_attr');ld('(hl)',0x46);inc('hl');dec('b');jp('selector_attr','nz');la('selected_phase');call('digit_ptr');ld('hl',addr(120,21));jp('draw_1_8')
 lab('cheat_beep');ld('b',120);alu('xor','a');lab('cheat_tone');alu('xor',16);emit('out ($fe),a',0xd3,0xfe);ld('c',160);lab('cheat_tone_wait');dec('c');jp('cheat_tone_wait','nz');dec('b');jp('cheat_tone','nz');alu('xor','a');emit('out ($fe),a',0xd3,0xfe);ret()
-lab('title_start_release');call('song_wait');call('input');la('keys');bit(4);jp('title_start_release','nz');jp('restart')
+lab('title_start_release');call('select_control_wait');call('input');la('keys');bit(4);jp('title_start_release','nz');jp('restart')
 # Shared LZ screen decoder, writes exactly 6912 bytes; no scratch framebuffer.
 lab('unpack_screen');ld('de',0x4000)
 lab('unpack_next');ld('a','(hl)');inc('hl');alu('or','a');ret('z');bit(7);jp('unpack_match','nz');ld('c','a');ld('b',0);emit('ldir',0xed,0xb0);jp('unpack_next')
@@ -116,17 +116,19 @@ jp('init_stage')
 # On rewind, skip unrelated headers; no write until the expected header is seen.
 for name,first,dest,size in [('load_phase1',ord('R'),'phase_bank','phase_size'),('load_phase2',ord('B'),'phase_bank','phase_size'),('load_city_screen',ord('P'),0x4000,6912),('load_phase3',ord('L'),'phase_bank','phase_size'),('load_lab_screen',ord('T'),0x4000,6912),('load_phase4',ord('U'),'phase_bank','phase_size'),('load_ultra_screen',ord('C'),0x4000,6912),('load_phase5',ord('A'),'phase_bank','phase_size'),('load_alien_screen',ord('Q'),0x4000,6912),('load_final_screen',ord('F'),0x4000,6912)]:
  lab(name);setv('load_id',first);ld('hl',dest);sh('load_dest');ld('hl',size);sh('load_len');jp('load_named')
-lab('load_named');emit('ld ix,header_buf',0xdd,0x21);word('header_buf');ld('de',17);alu('xor','a');emit('scf',0x37);w('call $0556',0xcd,0x0556);jp('load_named','nc')
+lab('load_named');emit('ld ix,header_buf',0xdd,0x21);word('header_buf');ld('de',17);alu('xor','a');emit('scf',0x37);call('rom_load_safe');jp('load_named','nc')
 la('header_buf');alu('cp',3);jp('load_named','nz');la('load_id');ld('b','a');la('header_name');alu('cp','b');jp('load_named','nz')
 # Compare declared size and destination to expected. SBC clears carry first.
 for h,v in [('header_len','load_len'),('header_dest','load_dest')]:
  lh(v);emit('ex de,hl',0xeb);lh(h);alu('or','a');emit('sbc hl,de',0xed,0x52);jp('load_named','nz')
-lab('load_payload');emit('ld ix,(load_dest)',0xdd,0x2a);word('load_dest');emit('ld de,(load_len)',0xed,0x5b);word('load_len');ld('a',255);emit('scf',0x37);w('call $0556',0xcd,0x0556);jp('load_named','nc');emit('ld iy,$5c3a',0xfd,0x21,0x3a,0x5c);emit('im 1',0xed,0x56);emit('ei',0xfb);alu('xor','a');emit('out ($fe),a',0xd3,0xfe);ret()
+lab('load_payload');emit('ld ix,(load_dest)',0xdd,0x2a);word('load_dest');emit('ld de,(load_len)',0xed,0x5b);word('load_len');ld('a',255);emit('scf',0x37);call('rom_load_safe');jp('load_named','nc');emit('ld iy,$5c3a',0xfd,0x21,0x3a,0x5c);emit('im 1',0xed,0x56);emit('ei',0xfb);alu('xor','a');emit('out ($fe),a',0xd3,0xfe);ret()
 lab('phase_value');la('phase');dec('a');ld('e','a');ld('d',0);addhl('de');ld('a','(hl)');ret()
 lab('sync');la('sound');alu('or','a');jp('sync_wait','z');call('audio_game');la('last');ld('b','a');la(0x5c78);alu('sub','b');alu('cp',2);jp('sync_done','nc');ld('a','e');call('audio_play');lab('sync_wait');la('last');ld('b','a');la(0x5c78);alu('sub','b');alu('cp',2);jp('sync_done','nc');call('audio_wait');jp('sync_wait');lab('sync_done');la(0x5c78);sa('last');ret()
-# Input bits 0 R,1 L,2 down,3 up,4 fire. Keyboard and Kempston coexist.
-# Reject floating bus ($ff/$1f) and physically impossible opposing directions.
-lab('input');zero('keys');port(0x001f);alu('and',31);ld('d','a');alu('and',3);alu('cp',3);jp('keyboard','z');ld('a','d');alu('and',12);alu('cp',12);jp('keyboard','z');ld('a','d');alu('or','a');jp('keyboard','z');sa('keys');setv('joy',1)
+# Input bits 0 R,1 L,2 down,3 up,4 fire. Keyboard always read.
+# joy: 0 = title/unselected; 1 = Kempston selected; 2 = keyboard only.
+lab('input');zero('keys');zero('joy_source');call('keyboard');jp('input_joy')
+assert O+len(code)<=0x63f6
+data(bytes(0x63f6-(O+len(code))))
 lab('keyboard')
 for p,b,m in [(0xdffe,0,1),(0xdffe,1,2),(0xfdfe,0,4),(0xfbfe,0,8),(0x7ffe,0,16)]:
  n=tag();port(p);bit(b);jp(n,'nz');la('keys');alu('or',m);sa('keys');lab(n)
@@ -170,19 +172,34 @@ la('boss');alu('or','a');jp('boss_logic','nz');branch_var('advance',0,'no_progre
 # Active and dying slots bounded at four; never spawn atop an existing zombie.
 call('random');la('spawn_delay');alu('or','a');jp('spawn_try','z');dec('a');sa('spawn_delay');jp('enemy_move')
 lab('spawn_try');la('wave_left');alu('or','a');jp('wave_active','nz');lab('wave_size_roll');call('random');alu('and',3);alu('cp',3);jp('wave_size_roll','z');alu('add',2);sa('wave_left');lab('wave_active')
-# Check entry zones, independently of travel direction. A free zone is 0, blocked 1.
-zero('front_block');zero('rear_block');la('px');alu('cp',40);jp('rear_player_safe','nc');setv('rear_block',1);lab('rear_player_safe')
+# Front-only director; never use the left edge, even if the front is blocked.
 for i in range(4):
- p=f'e{i}';skip=tag();notrear=tag();not_direction=tag();branch_var(p+'on',0,skip);branch_var(p+'dir',1,not_direction,'nz');setv('rear_block',1);lab(not_direction);la(p+'x');alu('cp',32);jp(notrear,'nc');setv('rear_block',1);lab(notrear);la(p+'x');alu('cp',184);jp(skip,'c');setv('front_block',1);lab(skip)
-call('random');alu('and',7);alu('cp',3);jp('choose_rear','c');lab('choose_front');branch_var('front_block',0,'front_free');branch_var('rear_block',0,'rear_free');jp('enemy_move');lab('choose_rear');branch_var('rear_block',0,'rear_free');branch_var('front_block',0,'front_free');jp('enemy_move');lab('rear_free');setv('spawn_dir',1);jp('slot_search');lab('front_free');zero('spawn_dir');lab('slot_search')
+ p=f'e{i}';skip=tag();branch_var(p+'on',0,skip);la(p+'x');alu('cp',184);jp('enemy_move','nc');lab(skip)
+zero('spawn_dir');lab('slot_search')
 for i in range(4):branch_var(f'e{i}on',0,f'spawn{i}')
 jp('enemy_move')
 for i in range(4):
- p=f'e{i}';lab(f'spawn{i}');la('spawn_dir');sa(p+'dir');alu('or','a');jp(f'spawn{i}_front','z');setv(p+'x',0);jp(f'spawn{i}_speed');lab(f'spawn{i}_front');setv(p+'x',216);lab(f'spawn{i}_speed')
- call('random');alu('and',7);jp(f'spawn{i}_slow','nz');branch_var('spawn_dir',0,f'spawn{i}_runner');alu('xor','a');lab(f'spawn{i}_slow');alu('and',1);alu('add',2);sa(p+'period');setv(p+'speed',2);jp(f'spawn{i}_ready');lab(f'spawn{i}_runner');setv(p+'period',1);setv(p+'speed',4);lab(f'spawn{i}_ready');setv(p+'wait',1);setv(p+'y',112);setv(p+'on',1);zero(p+'anim');zero(p+'death');zero(p+'species');la('phase');alu('cp',3);jp(f'spawn{i}_hp','c');lab(f'spawn{i}_species');call('random');alu('and',15);ld('b','a');ld('hl','species_by_phase');call('phase_value');alu('cp','b');jp(f'spawn{i}_hp','c');jp(f'spawn{i}_hp','z');setv(p+'species',1);branch_var(p+'period',1,f'spawn{i}_alien_runner');setv(p+'period',2);jp(f'spawn{i}_hp');lab(f'spawn{i}_alien_runner');setv(p+'speed',5)
+ p=f'e{i}';lab(f'spawn{i}');zero(p+'dir');setv(p+'x',216)
+ call('random');alu('and',7);jp(f'spawn{i}_runner','z');lab(f'spawn{i}_slow');alu('and',1);alu('add',2);sa(p+'period');setv(p+'speed',2);jp(f'spawn{i}_ready');lab(f'spawn{i}_runner');setv(p+'period',1);setv(p+'speed',4);lab(f'spawn{i}_ready');setv(p+'wait',1);setv(p+'y',112);setv(p+'on',1);zero(p+'anim');zero(p+'death');zero(p+'species');la('phase');alu('cp',3);jp(f'spawn{i}_hp','c');lab(f'spawn{i}_species');call('random');alu('and',15);ld('b','a');ld('hl','species_by_phase');call('phase_value');alu('cp','b');jp(f'spawn{i}_hp','c');jp(f'spawn{i}_hp','z');setv(p+'species',1);branch_var(p+'period',1,f'spawn{i}_alien_runner');setv(p+'period',2);jp(f'spawn{i}_hp');lab(f'spawn{i}_alien_runner');setv(p+'speed',5)
  # Uniform rejection sampling 1..3; HP remains assigned until killed.
  lab(f'spawn{i}_hp');call('random');alu('and',3);alu('cp',3);jp(f'spawn{i}_hp','nc');inc('a');ld('b','a');la(p+'species');alu('add','b');sa(p+'hp');jp('wave_schedule')
 lab('wave_schedule');la('wave_left');dec('a');sa('wave_left');jp('wave_rest','z');call('random');alu('and',7);alu('add',7);sa('spawn_delay');jp('enemy_move');lab('wave_rest');call('random');alu('and',15);alu('add',18);sa('spawn_delay');jp('enemy_move')
+# Reuse original spawn area for environmental director; preserve every external routine address.
+lab('haz_spawn');branch_var('death',0,'haz_defer','nz');zero('front_block')
+# Avoid boxing Ace in against the left edge. Nearby enemies bias toward a forward trap.
+for i in range(4):
+ p=f'e{i}';skip=tag();branch_var(p+'on',1,skip,'nz');la('px');ld('b','a');la(p+'x');ld('c',48);call('near');jp(skip,'nc');setv('front_block',1);lab(skip)
+branch_var('front_block',0,'haz_choose');la('px');alu('cp',24);jp('haz_defer','c')
+lab('haz_choose');zero('htype');la('phase');alu('cp',3);jp('haz_pattern','c');call('random');alu('and',1);jp('haz_pattern','z');setv('htype',2)
+lab('haz_pattern');branch_var('front_block',1,'haz_ahead');call('random');alu('and',3);alu('cp',2);jp('haz_ahead','nc');alu('or','a');jp('haz_center','z')
+# Trailing-edge threat still intersects the current body; advance is the short escape.
+la('px');alu('and',252);alu('add',12);alu('and',248);alu('sub',8);jp('haz_place','nc');alu('xor','a');jp('haz_place')
+lab('haz_center');la('px');alu('and',252);alu('add',12);alu('and',248);jp('haz_place')
+lab('haz_ahead');la('px');alu('and',252);alu('add',12);alu('and',248);ld('b','a');la('htype');alu('or','a');ld('a',40);jp('haz_ahead_add','z');ld('a',24);lab('haz_ahead_add');alu('add','b')
+lab('haz_place');sa('hx');setv('hon',1);zero('hscroll');branch_var('htype',2,'lightning_start');setv('hy',40);ret()
+lab('haz_defer');setv('hdelay',12);ret()
+assert O+len(code)<=27574
+data(bytes(27574-(O+len(code))))
 lab('enemy_move')
 for i in range(4):
  p=f'e{i}';end=tag();off=tag();contact=tag();left=tag();branch_var(p+'on',0,end);branch_var('advance',0,p+'_camera_done');branch_var(p+'dir',1,p+'_camera_done');la(p+'x');alu('sub',2);jp(off,'c');sa(p+'x');lab(p+'_camera_done');branch_var(p+'on',2,p+'_dying');la(p+'wait');dec('a');sa(p+'wait');jp(contact,'nz');la(p+'period');sa(p+'wait');la(p+'speed');ld('b','a');la(p+'dir');alu('or','a');jp(left,'z');la(p+'x');alu('cp',216);jp(off,'nc');alu('add','b');alu('cp',217);jp(off,'nc');sa(p+'x');jp(contact);lab(left);la(p+'x');alu('sub','b');jp(off,'c');sa(p+'x');lab(contact);branch_var(p+'period',1,p+'_animfast');tick(p+'anim',1);jp(p+'_animcheck');lab(p+'_animfast');tick(p+'anim',2);lab(p+'_animcheck');branch_var(p+'anim',24,p+'_animreset');jp(p+'_animdone');lab(p+'_animreset');zero(p+'anim');lab(p+'_animdone')
@@ -206,10 +223,20 @@ la('px');alu('cp',176);jp('boss_pos_ok','c');setv('px',176);lab('boss_pos_ok')
 for i in range(3):
  p=f'b{i}';skip=tag();branch_var(p+'on',0,skip);ld('hl','eye_by_phase');call('phase_value');ld('b','a');la(p+'x');alu('cp','b');jp(skip,'c');zero(p+'on');near_const(p+'y',127,5,skip);la('frame');alu('and',31);alu('cp',6);jp(skip,'c');branch_var('boss_ready',0,skip);branch_var('boss_hit',0,skip,'nz');branch_var('boss_hp',0,skip);tick('boss_hp',-1);setv('boss_hit',12);branch_var('boss_hp',0,skip+'_boss_dead');call('sfx_hit');jp(skip+'_boss_score');lab(skip+'_boss_dead');call('sfx_bossdead');lab(skip+'_boss_score');call('score_inc');lab(skip)
 la('phase');alu('cp',3);jp('mago_hazard','nc');call('boss_attack');ret();lab('mago_hazard');branch_var('hon',0,'mago_shoot');branch_var('boss_hit',0,'mago_hazard_tick');tick('boss_hit',-1);lab('mago_hazard_tick');call('hazard');ret();lab('mago_shoot');call('boss_attack');ret();lab('boss_dying');zero('bon');zero('hon');tick('boss_end',1);alu('and',3);ret('nz');jp('sfx_bossdead')
-# One falling meteor at a time, in the road and in the boss battle.
-lab('hazard');branch_var('hon',0,'haz_active','nz');la('hdelay');alu('or','a');jp('haz_spawn','z');dec('a');sa('hdelay');ret();lab('haz_spawn');setv('hon',1);call('random');alu('and',7);alu('add','a');alu('add','a');alu('add','a');ld('b','a');la('px');alu('and',252);alu('add',12);alu('and',248);alu('add','b');alu('sub',24);jp('haz_x_ok','nc');alu('xor','a');lab('haz_x_ok');alu('cp',241);jp('haz_x_clamped','c');ld('a',240);lab('haz_x_clamped');sa('hx');setv('hy',40);zero('htype');la('phase');alu('cp',3);jp('haz_choose_lightning','nc');ret();lab('haz_choose_lightning');call('random');alu('and',1);ret('z');jp('lightning_start')
-lab('haz_active');la('htype');alu('cp',2);jp('lightning_warning','z');alu('cp',3);jp('lightning_strike','z');branch_var('htype',0,'haz_fall');la('hboom');dec('a');sa('hboom');jp('haz_off','z');ret();lab('haz_fall');la('hy');alu('cp',128);jp('haz_impact','nc');alu('add',3);alu('cp',129);jp('haz_impact','nc');sa('hy');la('px');alu('and',252);alu('add',13);ld('b','a');la('hx');alu('add',4);ld('c',10);call('near');jp('haz_done','nc');la('py');alu('add',16);ld('b','a');la('hy');alu('add',8);ld('c',19);call('near');jp('haz_done','nc');call('hurt');lab('haz_done');ret();lab('haz_impact');setv('htype',1);setv('hboom',12);setv('hy',128);jp('sfx_meteor');lab('haz_off');zero('hon');call('random');alu('and',31);ld('b','a');la('boss');alu('or','a');ld('a',72);jp('haz_delay','z');ld('a',18);lab('haz_delay');alu('add','b');sa('hdelay');ret()
+# Environmental director. One hazard at a time. Road attacks are anchored to the
+# world, moving left one byte per four camera advances; never retarget Ace.
+lab('hazard');branch_var('hon',0,'haz_active','nz');la('hdelay');alu('or','a');jp('haz_spawn','z');dec('a');sa('hdelay');ret()
+lab('haz_active');branch_var('boss',1,'haz_motion_done');branch_var('advance',0,'haz_motion_done');tick('hscroll',1);alu('cp',4);jp('haz_motion_done','c');zero('hscroll');la('hx');alu('sub',8);jp('haz_off','c');sa('hx');lab('haz_motion_done');la('htype');alu('cp',2);jp('lightning_warning','z');alu('cp',3);jp('lightning_strike','z');branch_var('htype',0,'haz_fall');la('hboom');dec('a');sa('hboom');jp('haz_off','z');ret();lab('haz_fall');la('hy');alu('cp',128);jp('haz_impact','nc');alu('add',3);alu('cp',129);jp('haz_impact','nc');sa('hy');la('px');alu('and',252);alu('add',13);ld('b','a');la('hx');alu('add',4);ld('c',10);call('near');jp('haz_done','nc');la('py');alu('add',16);ld('b','a');la('hy');alu('add',8);ld('c',19);call('near');jp('haz_done','nc');call('hurt');lab('haz_done');ret();lab('haz_impact');setv('htype',1);setv('hboom',12);setv('hy',128);jp('sfx_meteor')
+# ROM LD_BYTES tests SPACE as BREAK. Preserve the entire call contract,
+# wait for keyboard release before EVERY header and payload transfer.
+lab('rom_load_safe');push('af');push('bc');ld('bc',0x7ffe)
+lab('rom_wait_space');emit('in a,(c)',0xed,0x78);bit(0);jp('rom_wait_space','z');pop('bc');pop('af');w('jp $0556',0xc3,0x0556)
+assert O+len(code)<=0x7588
+data(bytes(0x7588-(O+len(code))))
+lab('haz_off');zero('hon');call('random');alu('and',31);ld('b','a');la('boss');alu('or','a');ld('a',72);jp('haz_delay','z');ld('a',18);lab('haz_delay');alu('add','b');sa('hdelay');ret()
 # Lightning: warning for 14 updates, strike 4 updates. One hazard slot.
+assert O+len(code)<=30114
+data(bytes(30114-(O+len(code))))
 lab('lightning_start');setv('hon',1);setv('htype',2);setv('hy',64);setv('hboom',14);la('hx');alu('cp',200);ret('c');setv('hx',192);ret()
 lab('lightning_warning');tick('hboom',-1);ret('nz');setv('htype',3);setv('hboom',4);call('sfx_lightning');jp('lightning_contact')
 lab('lightning_strike');tick('hboom',-1);jp('lightning_off','z');lab('lightning_contact');la('px');alu('and',252);alu('add',13);ld('b','a');la('hx');alu('add',4);ld('c',10);call('near');ret('nc');call('hurt');ret()
@@ -347,7 +374,19 @@ for i in range(5):
 jp('fast_done','nz');setv('span_offset',48);lab('fast_done');pop('de');pop('hl');ret()
 # Dispatch table must remain in one page; only low operand of JP is patched.
 spans=[None]+[(x0,x1) for x0 in range(5) for x1 in range(x0,5)]
-data(bytes((- (O+len(code)))%256));lab('sparse_table')
+# Use only the original sparse-dispatch alignment padding, never shift game code.
+lab('input_joy');branch_var('joy',2,'input_done');port(0x001f);alu('cp',32);ret('nc');ld('d','a')
+# Three agreeing full-byte samples; never mask undefined upper bits.
+for _ in range(2):emit('in a,(c)',0xed,0x78);alu('cp','d');ret('nz')
+ld('a','d');alu('and',3);alu('cp',3);ret('z');ld('a','d');alu('and',12);alu('cp',12);ret('z')
+# SPACE wins the title selection if both sources press fire. The keyboard
+# remains active even in joystick mode; all gameplay inputs are combined.
+la('keys');bit(4);jp('input_merge','nz');bit(4,'d');jp('input_merge','z');setv('joy_source',1)
+lab('input_merge');la('keys');alu('or','d');sa('keys');lab('input_done');ret()
+lab('select_control_wait');la('joy');alu('or','a');jp('song_wait','nz');la('joy_source');alu('or','a');ld('a',2);jp('control_selected','z');ld('a',1);lab('control_selected');sa('joy');jp('song_wait')
+lab('joy_source');data(b'\0')
+assert O+len(code)<=0x7f00
+data(bytes(0x7f00-(O+len(code))));lab('sparse_table')
 for i,span in enumerate(spans):jp('sparse_next' if span is None else f'sparse_span{i}')
 for i,span in enumerate(spans):jp('sparse_next' if span is None else f'fast_span{i}')
 for i,span in enumerate(spans):
@@ -443,7 +482,7 @@ ld('c',12);lab('msg_col');emit('ld a,(de)',0x1a);ld('(hl)','a');inc('de');inc('l
 ld('a','l');alu('sub',12);ld('l','a');call('nextrow');pop('bc');dec('b');jp('msg_row','nz');ret()
 # Data banks (only right-facing Ace; two preshift offsets per selected animation).
 lab('vars');lab('px');data(b'\0');lab('vars_plus1')
-for n in ['py','lives','boss_hp','jump','qheld','pose','keys','joy','inv','inv_last','bonus_left','cool','frame','last','scroll','boss','progress','hon','hx','hy','htype','hdelay','rng','rng_hi','spawn_delay','advance','moving','walkclock','distance_sub','death','bon','bx','by','lane','boss_delay','boss_hit','boss_ready','boss_end','hboom','crouch_clock','wave_left','front_block','rear_block','spawn_dir','boss_burst','sound']+[f'e{i}{s}' for i in range(4) for s in ['x','y','on','dir','period','speed','wait','anim','death','hp','species']]+[f'b{i}{s}' for i in range(3) for s in ['x','y','on','diag']]:lab(n);data(b'\0')
+for n in ['py','lives','boss_hp','jump','qheld','pose','keys','joy','inv','inv_last','bonus_left','cool','frame','last','scroll','boss','progress','hon','hx','hy','htype','hdelay','rng','rng_hi','spawn_delay','advance','moving','walkclock','distance_sub','death','bon','bx','by','lane','boss_delay','boss_hit','boss_ready','boss_end','hboom','crouch_clock','wave_left','front_block','hscroll','spawn_dir','boss_burst','sound']+[f'e{i}{s}' for i in range(4) for s in ['x','y','on','dir','period','speed','wait','anim','death','hp','species']]+[f'b{i}{s}' for i in range(3) for s in ['x','y','on','diag']]:lab(n);data(b'\0')
 lab('score')
 for i in range(5):lab(f'score{i}');data(b'\0')
 lab('saved_sp');data(b'\0\0');labels['vars_size']=O+len(code)-labels['vars']-1
@@ -632,4 +671,4 @@ out+=header(3,'FINAL',6912,0x4000,0)+block(255,final)
 (ROOT/'base_sin_carga.tap').write_bytes(out);print('CODE',len(code),'end',hex(O+len(code)), 'TAP',len(out),'resident',len(resident),'overlay',len(phase1_data))
 
 from loading import wrap
-(ROOT/'ESCORIA_SIDERAL_ALFA_21_2.tap').write_bytes(wrap(out))
+(ROOT/'ESCORIA_SIDERAL_V1.0.1_DIRECTOR.tap').write_bytes(wrap(out))

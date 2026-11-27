@@ -1,0 +1,7 @@
+PASS: 28 physical TAP blocks, headers and checksums, original SCR, all 22 game blocks identical to rebuilt base
+PASS: SPACE one beep, held input rejected, wait for fresh press/release, SCR unchanged, USR returns
+PASS: Kempston FIRE one beep, held input rejected, wait for fresh press/release, SCR unchanged, USR returns
+PASS: Kempston right + FIRE one beep, held input rejected, wait for fresh press/release, SCR unchanged, USR returns
+PASS: Kempston diagonal + FIRE one beep, held input rejected, wait for fresh press/release, SCR unchanged, USR returns
+PASS: Kempston upper bits set + FIRE one beep, held input rejected, wait for fresh press/release, SCR unchanged, USR returns
+PASS: five-phase dispatch and exact final SCR with new physical tape offsets (ROM transfer simulated)

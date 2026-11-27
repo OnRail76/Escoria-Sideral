@@ -1,0 +1,1 @@
+REPRODUCED FIX1 defect: actual win -> phase 2 reaches ROM $0556 with keyboard SPACE still held, before BCNBANK.
