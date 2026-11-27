@@ -1,0 +1,93 @@
+name: ESCORIA SIDERAL V1.0.1
+on:
+  push:
+    branches:
+      - release/v1.0.1
+      - main
+    paths:
+      - '.github/workflows/release-v101.yml'
+      - 'scripts/reconstruir_escoria_v101.sh'
+      - 'scripts/publicar_escoria_v101.sh'
+      - 'VERSION'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: escoria-v101-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/release/v1.0.1'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-lato
+          python -m pip install Pillow PyMuPDF==1.26.7
+      - name: Rebuild approved TAP and revised atlas from preserved original
+        run: |
+          mkdir -p "$RUNNER_TEMP/edition"
+          bash scripts/reconstruir_escoria_v101.sh --download "$RUNNER_TEMP/edition"
+          printf '%s  %s\n' df2d7b596060ee42a675de0b748e14e2aa2ce9d8be9a2308e7f538df1240766e "$RUNNER_TEMP/edition/ESCORIA_SIDERAL_V1.0.1.tap" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/edition/ESCORIA_SIDERAL_V1.0.1_PROYECTO_FINAL.zip" -d "$RUNNER_TEMP/edition"
+          p="$RUNNER_TEMP/edition/ESCORIA_SIDERAL_V1.0.1"
+          (cd "$p" && sha256sum -c SHA256SUMS.txt --quiet)
+          for d in JUEGO FUENTES RECURSOS DOCUMENTACION CAPTURAS; do cp -a "$p/$d/." "$d/"; done
+          cp "$p/LEEME.md" "$p/CHANGELOG.md" "$p/VERSION" "$p/SHA256SUMS.txt" .
+          git rm --ignore-unmatch JUEGO/ESCORIA_SIDERAL_V1.0.tap DOCUMENTACION/ESCORIA_SIDERAL_V1.0_ATLAS_MANUAL_MEMORIA.pdf FUENTES/ESCORIA_SIDERAL_ALFA_21_2.tap
+          for f in "$p/FUENTES/PRUEBAS_V1_0/"*; do git rm --ignore-unmatch "FUENTES/$(basename "$f")"; done
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('scripts/publicar_escoria_v101.sh').read_text()
+          Path('README.md').write_text(s.split("cat > README.md <<'EOF'\n",1)[1].split('\nEOF\n',1)[0]+'\n')
+          PY
+          sha256sum -c SHA256SUMS.txt --quiet
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md LEEME.md CHANGELOG.md VERSION SHA256SUMS.txt JUEGO FUENTES RECURSOS DOCUMENTACION CAPTURAS
+          if ! git diff --cached --quiet; then
+            git commit -m "ESCORIA SIDERAL V1.0.1 - Gold Master verificado"
+            git push origin HEAD:release/v1.0.1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ESCORIA-SIDERAL-V1.0.1
+          path: |
+            ${{ runner.temp }}/edition/ESCORIA_SIDERAL_V1.0.1.tap
+            ${{ runner.temp }}/edition/ESCORIA_SIDERAL_V1.0.1_ATLAS_MANUAL_MEMORIA.pdf
+            ${{ runner.temp }}/edition/ESCORIA_SIDERAL_V1.0.1_PROYECTO_FINAL.zip
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify and publish current release
+        run: |
+          set -euo pipefail
+          test "$(cat VERSION)" = '1.0.1'
+          sha256sum -c SHA256SUMS.txt --quiet
+          printf '%s  %s\n' df2d7b596060ee42a675de0b748e14e2aa2ce9d8be9a2308e7f538df1240766e JUEGO/ESCORIA_SIDERAL_V1.0.1.tap | sha256sum -c -
+          if gh release view v1.0.1 >/dev/null 2>&1; then
+            echo 'Release already exists; not overwriting.'
+            exit 0
+          fi
+          python3 - <<'PY'
+          import zipfile
+          from pathlib import Path
+          with zipfile.ZipFile('ESCORIA_SIDERAL_V1.0.1_PROYECTO_FINAL.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for line in Path('SHA256SUMS.txt').read_text().splitlines():
+                  p=Path(line.split('  ',1)[1])
+                  z.write(p,'ESCORIA_SIDERAL_V1.0.1/'+p.as_posix())
+              z.write('SHA256SUMS.txt','ESCORIA_SIDERAL_V1.0.1/SHA256SUMS.txt')
+          PY
+          gh release create v1.0.1 --target "$GITHUB_SHA" --title 'ESCORIA SIDERAL V1.0.1' --latest --notes 'Gold Master: director frontal, peligros ambientales tácticos, multicarga y controles corregidos. FIX 3 aprobado en Fuse. Fondos estáticos, bancos y jefes intactos. Incluye TAP, atlas, portada y paquete completo.' JUEGO/ESCORIA_SIDERAL_V1.0.1.tap DOCUMENTACION/ESCORIA_SIDERAL_V1.0.1_ATLAS_MANUAL_MEMORIA.pdf DOCUMENTACION/PORTADA_OFICIAL.png ESCORIA_SIDERAL_V1.0.1_PROYECTO_FINAL.zip
+          gh release view v1.0.1 --json url,tagName,assets,isDraft,isPrerelease
